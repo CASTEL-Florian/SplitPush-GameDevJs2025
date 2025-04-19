@@ -1,20 +1,17 @@
 import { Level } from "./Level";
 import { Orb } from "./Orb";
+import { Teleporter } from "./Teleporter";
 
-// Example: Define the size/positions of your windows here
-// For demonstration, let's assume two windows, left and right halves of an 800x600 screen
-const windowPositions = [
-    { x: 200, y: 300 }, // Center of left window
-    { x: 300, y: 400 }, // Center of right window
-];
 
 // Create a level with one orb in each window
 export const leftLevel1 = new Level([
-    new Orb(windowPositions[0].x, windowPositions[0].y),
+    new Orb(200, 300),
+    new Teleporter(100, 200)
 ]);
 
 export const rightLevel1 = new Level([
-    new Orb(windowPositions[1].x, windowPositions[1].y),
+    new Orb(300, 400),
+    new Teleporter(100, 300)
 ]);
 
 // You can export more levels here as needed

@@ -15,10 +15,10 @@ export class LevelManager {
      */
     spawn(index: number, scene: Phaser.Scene, windowId: WindowID): void {
         if (windowId === 'left') {
-            this.leftLevels[index].spawn(scene);
+            this.leftLevels[index].spawn(scene, windowId);
         }
         if (windowId === 'right') {
-            this.rightLevels[index].spawn(scene);
+            this.rightLevels[index].spawn(scene, windowId);
         }
     }
 

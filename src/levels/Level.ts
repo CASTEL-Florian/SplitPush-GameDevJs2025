@@ -1,4 +1,5 @@
 import { LevelElement } from './LevelElement';
+import { WindowID } from '../GameBridge';
 
 export class Level {
     elements: LevelElement[];
@@ -19,9 +20,9 @@ export class Level {
     /**
      * Spawns all elements in this level into the scene.
      */
-    spawn(scene: Phaser.Scene): void {
+    spawn(scene: Phaser.Scene, windowId: WindowID): void {
         for (const element of this.elements) {
-            element.spawn(scene);
+            element.spawn(scene, windowId);
         }
     }
 

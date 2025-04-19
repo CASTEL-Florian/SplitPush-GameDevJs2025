@@ -33,7 +33,10 @@ export default class MainScene extends Phaser.Scene {
 
     preload(): void {
         this.load.image('player', 'assets/arrow.png');
-        this.load.image('orb', 'assets/orb.png');
+        this.load.image('lightOrb', 'assets/lightOrb.png');
+        this.load.image('darkOrb', 'assets/darkOrb.png');
+        this.load.image('lightTeleporter', 'assets/lightTeleporter.png');
+        this.load.image('darkTeleporter', 'assets/darkTeleporter.png');
     }
 
     create(): void {
