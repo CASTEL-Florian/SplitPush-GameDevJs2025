@@ -31,9 +31,7 @@ class GameBridge {
     // Emit an event to all listeners
     emit(eventName: string, data?: any): void {
         const eventListeners = this.listeners.get(eventName);
-         console.log(`[Bridge] Emitting event: ${eventName}`, data); // Added for debugging
         if (eventListeners) {
-             console.log(`[Bridge] Found ${eventListeners.length} listeners for ${eventName}`); // Added for debugging
             // Iterate over a copy in case listeners modify the array during iteration
             [...eventListeners].forEach(listener => {
                 try {
@@ -43,7 +41,7 @@ class GameBridge {
                 }
             });
         } else {
-             console.log(`[Bridge] No listeners found for ${eventName}`); // Added for debugging
+            console.log(`[Bridge] No listeners found for ${eventName}`); // Added for debugging
         }
     }
 }

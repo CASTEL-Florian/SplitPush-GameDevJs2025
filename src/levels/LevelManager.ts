@@ -1,4 +1,5 @@
 import { Level } from './Level';
+import { WindowID } from '../GameBridge';
 
 export class LevelManager {
     leftLevels: Level[];
@@ -9,11 +10,28 @@ export class LevelManager {
         this.rightLevels = rightLevels;
     }
 
-    addLevelToLeft(level: Level) {
-        this.leftLevels.push(level);
+    /**
+     * Spawns the left and right levels at the given index.
+     */
+    spawn(index: number, scene: Phaser.Scene, windowId: WindowID): void {
+        if (windowId === 'left') {
+            this.leftLevels[index].spawn(scene);
+        }
+        if (windowId === 'right') {
+            this.rightLevels[index].spawn(scene);
+        }
     }
 
-    addLevelToRight(level: Level) {
-        this.rightLevels.push(level);
+    /**
+     * Despawns the left and right levels at the given index.
+     */
+    despawn(index: number, scene: Phaser.Scene, windowId: WindowID): void {
+        if (windowId === 'left') {
+            this.leftLevels[index].despawn(scene);
+        }
+        if (windowId === 'right') {
+            this.rightLevels[index].despawn(scene);
+        }
     }
 }
+

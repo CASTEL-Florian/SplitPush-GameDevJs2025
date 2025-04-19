@@ -2,13 +2,15 @@
 import Phaser from 'phaser';
 import { gameBridge, Events, WindowID, PlayerPositionData } from '../GameBridge'; // Make sure path is correct
 import { Player } from '../entities/Player';
+import { LevelManager } from '../levels/LevelManager';
+import { leftLevels, rightLevels } from '../levels/LevelDefinitions';
 
 export default class MainScene extends Phaser.Scene {
     private windowId!: WindowID; // 'left' or 'right' - set during init
     private gameBridge = gameBridge;
 
     private player!: Player;
-    private isUpdatingFromBridge = false;
+    private levelManager!: LevelManager;
 
 
     constructor() {
@@ -31,6 +33,7 @@ export default class MainScene extends Phaser.Scene {
 
     preload(): void {
         this.load.image('player', 'assets/arrow.png');
+        this.load.image('orb', 'assets/orb.png');
     }
 
     create(): void {
@@ -55,6 +58,10 @@ export default class MainScene extends Phaser.Scene {
     private setupGame(): void {
         this.physics.world.setBounds(0, 0, this.cameras.main.width, this.cameras.main.height);
         this.player = new Player(this, this.windowId);
+
+        // Create LevelManager with all levels and load the first level
+        this.levelManager = new LevelManager(leftLevels, rightLevels);
+        this.levelManager.spawn(0, this, this.windowId);
     }
 
     /**
@@ -65,19 +72,14 @@ export default class MainScene extends Phaser.Scene {
             if (data.windowId === this.windowId) {
                 return;
             }
-             if (this.player) {
-                this.isUpdatingFromBridge = true;
+            if (this.player) {
                 this.player.sprite.setPosition(data.x, data.y);
                 // Stop the player if the update indicates no movement from the other side
                 // Setting position stops velocity for this frame. If the next update
                 // from the other side keeps sending the same position, it remains stopped.
                 // If the other side starts moving, new position updates will reflect that.
                 this.player.sprite.setVelocity(0, 0); // Explicitly stop velocity when updating from bridge
-
-                 this.time.delayedCall(10, () => {
-                     this.isUpdatingFromBridge = false;
-                 });
-             }
+            }
         };
 
         this.gameBridge.on(Events.PLAYER_POSITION_UPDATE, handlePlayerUpdate);

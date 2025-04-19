@@ -1,6 +1,6 @@
 import { LevelElement } from "./LevelElement";
 
-export class Orb extends LevelElement {
+export class Teleporter extends LevelElement {
     spriteKey: string;
     x: number;
     y: number;
@@ -8,7 +8,7 @@ export class Orb extends LevelElement {
 
     constructor(x: number, y: number) {
         super();
-        this.spriteKey = "orb";
+        this.spriteKey = "teleporter";
         this.x = x;
         this.y = y;
     }

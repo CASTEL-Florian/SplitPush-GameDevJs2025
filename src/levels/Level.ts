@@ -15,4 +15,22 @@ export class Level {
         const idx = this.elements.indexOf(element);
         if (idx !== -1) this.elements.splice(idx, 1);
     }
+
+    /**
+     * Spawns all elements in this level into the scene.
+     */
+    spawn(scene: Phaser.Scene): void {
+        for (const element of this.elements) {
+            element.spawn(scene);
+        }
+    }
+
+    /**
+     * Despawns all elements in this level from the scene.
+     */
+    despawn(scene: Phaser.Scene): void {
+        for (const element of this.elements) {
+            element.despawn(scene);
+        }
+    }
 }
