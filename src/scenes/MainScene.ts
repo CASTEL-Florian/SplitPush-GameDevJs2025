@@ -2,7 +2,9 @@
 import Phaser from 'phaser';
 import { gameBridge, Events, WindowID, PlayerPositionData } from '../GameBridge'; // Make sure path is correct
 
-const PLAYER_SPEED = 200; // Pixels per second
+const PLAYER_MAX_SPEED = 200; // Max speed in pixels per second
+const PLAYER_ACCELERATION = 800; // Pixels per second squared
+const PLAYER_DECELERATION = 1000; // Pixels per second squared
 
 export default class MainScene extends Phaser.Scene {
     private windowId!: WindowID; // 'left' or 'right' - set during init
@@ -110,54 +112,90 @@ export default class MainScene extends Phaser.Scene {
             return;
         }
 
-        let velocityX = 0;
-        let velocityY = 0;
-        const previousVelX = (this.player.body as any)._prevVelocityX ?? 0;
-        const previousVelY = (this.player.body as any)._prevVelocityY ?? 0;
+        // Get delta time in seconds
+        const delta = this.game.loop.delta / 1000;
+        const body = this.player.body as Phaser.Physics.Arcade.Body;
 
-        // Horizontal movement
+        let targetVelX = 0;
+        let targetVelY = 0;
+
+        // Input direction
         if (this.cursors.left.isDown) {
-            velocityX = -PLAYER_SPEED;
+            targetVelX = -1;
         } else if (this.cursors.right.isDown) {
-            velocityX = PLAYER_SPEED;
+            targetVelX = 1;
         }
-
-        // Vertical movement
         if (this.cursors.up.isDown) {
-            velocityY = -PLAYER_SPEED;
+            targetVelY = -1;
         } else if (this.cursors.down.isDown) {
-            velocityY = PLAYER_SPEED;
+            targetVelY = 1;
         }
 
-        // Apply velocity
-        this.player.setVelocity(velocityX, velocityY);
-
-        // Normalize diagonal movement
-        if (velocityX !== 0 && velocityY !== 0) {
-            this.player.body!.velocity.normalize().scale(PLAYER_SPEED);
+        // Normalize direction for diagonal movement
+        if (targetVelX !== 0 && targetVelY !== 0) {
+            const norm = Math.sqrt(2) / 2;
+            targetVelX *= norm;
+            targetVelY *= norm;
         }
+
+        // Current velocity
+        let velX = body.velocity.x;
+        let velY = body.velocity.y;
+
+        // Acceleration/deceleration logic
+        if (targetVelX !== 0) {
+            // Accelerate toward max speed in input direction
+            velX += targetVelX * PLAYER_ACCELERATION * delta;
+            // Clamp to max speed
+            if (Math.abs(velX) > PLAYER_MAX_SPEED) {
+                velX = PLAYER_MAX_SPEED * Math.sign(velX);
+            }
+        } else {
+            // Decelerate X
+            if (velX > 0) {
+                velX -= PLAYER_DECELERATION * delta;
+                if (velX < 0) velX = 0;
+            } else if (velX < 0) {
+                velX += PLAYER_DECELERATION * delta;
+                if (velX > 0) velX = 0;
+            }
+        }
+        if (targetVelY !== 0) {
+            velY += targetVelY * PLAYER_ACCELERATION * delta;
+            if (Math.abs(velY) > PLAYER_MAX_SPEED) {
+                velY = PLAYER_MAX_SPEED * Math.sign(velY);
+            }
+        } else {
+            if (velY > 0) {
+                velY -= PLAYER_DECELERATION * delta;
+                if (velY < 0) velY = 0;
+            } else if (velY < 0) {
+                velY += PLAYER_DECELERATION * delta;
+                if (velY > 0) velY = 0;
+            }
+        }
+
+        body.setVelocity(velX, velY);
 
         // Emit position update if velocity changed (start moving, stop moving, change direction)
-        // or if position changed significantly (e.g., pushed by something else - less relevant here)
-         const currentVel = this.player.body!.velocity;
-         // Check if velocity *vector* has changed significantly OR if we stopped
-         const moved = currentVel?.x !== 0 || currentVel?.y !== 0;
-         const stopped = !moved && (previousVelX !== 0 || previousVelY !== 0);
-
+        const previousVelX = (body as any)._prevVelocityX ?? 0;
+        const previousVelY = (body as any)._prevVelocityY ?? 0;
+        const currentVel = body.velocity;
+        const moved = currentVel?.x !== 0 || currentVel?.y !== 0;
+        const stopped = !moved && (previousVelX !== 0 || previousVelY !== 0);
         const xoffset = this.cameras.main.width * (this.windowId === 'left' ? -1 : 1);
-        
 
-         if (moved || stopped) {
-             const positionData: PlayerPositionData = {
+        if (moved || stopped) {
+            const positionData: PlayerPositionData = {
                 x: this.player.x + xoffset,
                 y: this.player.y,
                 windowId: this.windowId
-             };
-             this.gameBridge.emit(Events.PLAYER_POSITION_UPDATE, positionData);
-         }
+            };
+            this.gameBridge.emit(Events.PLAYER_POSITION_UPDATE, positionData);
+        }
 
-         // Store current velocity for next frame comparison
-         (this.player.body as any)._prevVelocityX = currentVel?.x ?? 0;
-         (this.player.body as any)._prevVelocityY = currentVel?.y ?? 0;
+        // Store current velocity for next frame comparison
+        (body as any)._prevVelocityX = currentVel?.x ?? 0;
+        (body as any)._prevVelocityY = currentVel?.y ?? 0;
     }
 }
