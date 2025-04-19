@@ -61,7 +61,7 @@ export default class MainScene extends Phaser.Scene {
 
 
         // Create player sprite and enable physics
-        const startX = this.cameras.main.width / 2;
+        const startX = this.cameras.main.width / 2 * (this.windowId === 'left' ? 1 : -1);
         const startY = this.cameras.main.height / 2;
         this.player = this.physics.add.sprite(startX, startY, 'player').setDisplaySize(32, 32);
 
