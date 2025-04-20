@@ -2,9 +2,14 @@ import Phaser from 'phaser';
 import MainScene from './scenes/MainScene';
 import { WindowID } from './GameBridge';
 
-const WINDOW_WIDTH = 320;
-const WINDOW_HEIGHT = 480;
+export const WINDOW_WIDTH = 320;
+export const WINDOW_HEIGHT = 480;
 const BACKGROUND_COLOR = '#000033'; // Dark blue
+
+if ((window as any).__PHASER_GAMES__) {
+    (window as any).__PHASER_GAMES__.forEach((game: Phaser.Game) => game.destroy(true));
+}
+(window as any).__PHASER_GAMES__ = [];
 
 // Configuration for the Left Game Instance
 const configLeft: Phaser.Types.Core.GameConfig = {
@@ -45,3 +50,4 @@ const configRight: Phaser.Types.Core.GameConfig = {
 // Create the two game instances
 const gameLeft = new Phaser.Game(configLeft);
 const gameRight = new Phaser.Game(configRight);
+(window as any).__PHASER_GAMES__.push(gameLeft, gameRight);
