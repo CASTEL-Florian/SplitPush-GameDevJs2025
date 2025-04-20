@@ -3,12 +3,11 @@ import Phaser from 'phaser';
 import { Events, WindowID } from '../GameBridge'; // Make sure path is correct
 import { Player } from '../entities/Player';
 import { levelManager } from '../levels/LevelManager';
-import { WeightManager } from '../WeightManager';
+import { weightManager } from '../WeightManager';
 
 export default class MainScene extends Phaser.Scene {
     private windowId!: WindowID; // 'left' or 'right' - set during init
     private player!: Player;
-    private weightManager!: WeightManager;
     private lastLevelIndex: number = 0;
 
     constructor() {
@@ -60,11 +59,8 @@ export default class MainScene extends Phaser.Scene {
         this.physics.world.setBounds(0, 0, this.cameras.main.width, this.cameras.main.height);
         this.player = new Player(this, this.windowId);
 
-        // --- WeightManager Integration ---
-        this.weightManager = new WeightManager();
-
         // Set up the callback to update the window position when weights change
-        this.weightManager.onWeightChange = (wm) => {
+        weightManager.onWeightChange = (wm) => {
             // Move the actual HTML container (not the camera)
             const containerId = this.windowId === 'left' ? 'game-container-left' : 'game-container-right';
             const container = document.getElementById(containerId);
@@ -79,9 +75,11 @@ export default class MainScene extends Phaser.Scene {
             const containerId = this.windowId === 'left' ? 'game-container-left' : 'game-container-right';
             const container = document.getElementById(containerId);
             if (container) {
-                container.style.transform = `translateY(${this.weightManager.getInitialY()}px)`;
+                container.style.transform = `translateY(${weightManager.getInitialY()}px)`;
             }
         }
+        weightManager.leftWeight = 1;
+        weightManager.rightWeight = 2;
 
         // Create LevelManager with all levels and load the first level
         this.lastLevelIndex = 0;

@@ -51,3 +51,5 @@ export class WeightManager {
         return getTileSize() / 2 * Math.min(maxWeightDiff, Math.max(-maxWeightDiff, diff));
     } 
 }
+
+export const weightManager = new WeightManager();
