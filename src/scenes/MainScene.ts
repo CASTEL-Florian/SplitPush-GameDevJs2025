@@ -4,6 +4,7 @@ import { gameBridge, Events, WindowID, PlayerPositionData } from '../GameBridge'
 import { Player } from '../entities/Player';
 import { LevelManager } from '../levels/LevelManager';
 import { leftLevels, rightLevels } from '../levels/LevelDefinitions';
+import { WeightManager } from '../WeightManager';
 
 export default class MainScene extends Phaser.Scene {
     private windowId!: WindowID; // 'left' or 'right' - set during init
@@ -11,7 +12,7 @@ export default class MainScene extends Phaser.Scene {
 
     private player!: Player;
     private levelManager!: LevelManager;
-
+    private weightManager!: WeightManager;
 
     constructor() {
         super({ key: 'MainScene' });
@@ -62,6 +63,29 @@ export default class MainScene extends Phaser.Scene {
     private setupGame(): void {
         this.physics.world.setBounds(0, 0, this.cameras.main.width, this.cameras.main.height);
         this.player = new Player(this, this.windowId);
+
+        // --- WeightManager Integration ---
+        this.weightManager = new WeightManager();
+
+        // Set up the callback to update the window position when weights change
+        this.weightManager.onWeightChange = (wm) => {
+            // Move the actual HTML container (not the camera)
+            const containerId = this.windowId === 'left' ? 'game-container-left' : 'game-container-right';
+            const container = document.getElementById(containerId);
+            if (container) {
+                // Calculate the new Y position
+                const y = wm.getInitialY() + (this.windowId === 'left' ? 1 : -1) * wm.getDeltaPixels();
+                container.style.transform = `translateY(${y}px)`;
+            }
+        };
+        // Set initial container position
+        {
+            const containerId = this.windowId === 'left' ? 'game-container-left' : 'game-container-right';
+            const container = document.getElementById(containerId);
+            if (container) {
+                container.style.transform = `translateY(${this.weightManager.getInitialY()}px)`;
+            }
+        }
 
         // Create LevelManager with all levels and load the first level
         this.levelManager = new LevelManager(leftLevels, rightLevels);

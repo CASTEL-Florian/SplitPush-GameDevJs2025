@@ -7,6 +7,14 @@ export class WeightManager {
     private _rightWeight: number;
 
     /**
+     * Optional callback to be called whenever the weights change.
+     * The callback receives the WeightManager instance as a parameter.
+     * Example usage:
+     *   weightManager.onWeightChange = (wm) => { ...update window positions... }
+     */
+    public onWeightChange?: (wm: WeightManager) => void;
+
+    /**
      * Returns the initial Y position for both windows when weight difference is zero.
      * Use this to center the windows vertically, so they can move up or down by up to half the max difference.
      *   initialY = maxWeightDiff * getTileSize() / 2
@@ -26,6 +34,7 @@ export class WeightManager {
 
     set leftWeight(value: number) {
         this._leftWeight = value;
+        if (this.onWeightChange) this.onWeightChange(this);
     }
 
     get rightWeight(): number {
@@ -34,6 +43,7 @@ export class WeightManager {
 
     set rightWeight(value: number) {
         this._rightWeight = value;
+        if (this.onWeightChange) this.onWeightChange(this);
     }
 
     getDeltaPixels(): number {
