@@ -103,11 +103,6 @@ export default class MainScene extends Phaser.Scene {
             }
             if (this.player) {
                 this.player.sprite.setPosition(data.x, data.y);
-                // Stop the player if the update indicates no movement from the other side
-                // Setting position stops velocity for this frame. If the next update
-                // from the other side keeps sending the same position, it remains stopped.
-                // If the other side starts moving, new position updates will reflect that.
-                this.player.sprite.setVelocity(0, 0); // Explicitly stop velocity when updating from bridge
             }
         };
 
@@ -126,24 +121,23 @@ export default class MainScene extends Phaser.Scene {
 
     /**
      * Returns true if the tile at the given position and windowID is empty, or if the tileset is null, or if no level is loaded.
-     * @param position World position (in pixels)
+     * @param tileX Tile X coordinate
+     * @param tileY Tile Y coordinate
      * @param windowId 'left' or 'right'
      */
-    public isTileEmptyOrInvalid(position: Phaser.Math.Vector2, windowId: WindowID): boolean {
+    public isTileEmptyOrInvalid(tileX: number, tileY: number, windowId: WindowID): boolean {
         if (!this.levelManager) return true;
         // Get the current level for the given window
         const levelArr = windowId === 'left' ? this.levelManager.leftLevels : this.levelManager.rightLevels;
         const level = levelArr[this.lastLevelIndex];
         if (!level || !level.tileset || !level.tilemapData) return true;
         const tilemapData = level.tilemapData;
-        // Convert world position to tile coordinates
-        const tileX = Math.floor(position.x / tilemapData.tileWidth);
-        const tileY = Math.floor(position.y / tilemapData.tileHeight);
         // Check bounds
-        if (tileY < 0 || tileY >= tilemapData.mapHeightInTiles || tileX < 0 || tileX >= tilemapData.mapWidthInTiles) return true;
+        
+        if (tileY < 0 || tileY >= tilemapData.mapHeightInTiles || tileX < 0 || tileX >= tilemapData.mapWidthInTiles) return false;
         // 0 means empty in most tilemaps
         const tileValue = tilemapData.mapData[tileY][tileX];
-        return tileValue === 0;
+        return tileValue === -1;
     }
 
 }
