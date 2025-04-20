@@ -9,6 +9,12 @@ const PLAYER_DECELERATION = 200;
 export class Player {
     public sprite: Phaser.GameObjects.Sprite;
     public cursors: Phaser.Types.Input.Keyboard.CursorKeys;
+    private keyW: Phaser.Input.Keyboard.Key;
+    private keyA: Phaser.Input.Keyboard.Key;
+    private keyS: Phaser.Input.Keyboard.Key;
+    private keyD: Phaser.Input.Keyboard.Key;
+    private keyZ: Phaser.Input.Keyboard.Key;
+    private keyQ: Phaser.Input.Keyboard.Key;
     private windowId: WindowID;
     private tileX: number;
     private tileY: number;
@@ -18,6 +24,13 @@ export class Player {
     constructor(scene: MainScene, windowId: WindowID) {
         this.windowId = windowId;
         this.cursors = scene.input!.keyboard!.createCursorKeys();
+        // WASD (QWERTY) and ZQSD (AZERTY) support
+        this.keyW = scene.input!.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.W);
+        this.keyA = scene.input!.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.A);
+        this.keyS = scene.input!.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.S);
+        this.keyD = scene.input!.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.D);
+        this.keyZ = scene.input!.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.Z);
+        this.keyQ = scene.input!.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.Q);
         // Start in the center of the map (tile coordinates)
         // For now, use 4,4 as default (assuming 8x8 map)
         this.tileX = 4;
@@ -41,15 +54,17 @@ export class Player {
 
     public update(delta: number) {
         // Only allow one move per key press
-        if (!this.cursors.left.isDown && !this.cursors.right.isDown && !this.cursors.up.isDown && !this.cursors.down.isDown) {
+        if (!this.cursors.left.isDown && !this.cursors.right.isDown && !this.cursors.up.isDown && !this.cursors.down.isDown &&
+            !this.keyW.isDown && !this.keyA.isDown && !this.keyS.isDown && !this.keyD.isDown &&
+            !this.keyZ.isDown && !this.keyQ.isDown) {
             this._moveLock = false;
         }
         if (this._moveLock) return;
         let dx = 0, dy = 0;
-        if (this.cursors.left.isDown) dx = -1;
-        else if (this.cursors.right.isDown) dx = 1;
-        else if (this.cursors.up.isDown) dy = -1;
-        else if (this.cursors.down.isDown) dy = 1;
+        if (this.cursors.left.isDown || this.keyA.isDown || this.keyQ.isDown) dx = -1;
+        else if (this.cursors.right.isDown || this.keyD.isDown) dx = 1;
+        else if (this.cursors.up.isDown || this.keyW.isDown || this.keyZ.isDown) dy = -1;
+        else if (this.cursors.down.isDown || this.keyS.isDown) dy = 1;
         if (dx !== 0 || dy !== 0) {
             this._moveLock = true;
             // Find last empty tile in this direction
