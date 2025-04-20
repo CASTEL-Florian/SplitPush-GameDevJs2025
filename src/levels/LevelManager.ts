@@ -1,6 +1,7 @@
 import { Level, TilemapData } from './Level';
 import { WindowID } from '../GameBridge';
 import { WINDOW_WIDTH} from '../game';
+import { leftLevels, rightLevels } from '../levels/LevelDefinitions';
 
 const TILEMAP_WIDTH = 8;
 
@@ -71,4 +72,6 @@ export class LevelManager {
         return await response.json();
     }
 }
+
+export const levelManager = new LevelManager(leftLevels, rightLevels);
 

@@ -20,6 +20,7 @@ export class Player {
     private tileY: number;
     private tileSize: number;
     private mainScene: MainScene; // MainScene type
+    private isInWindow: boolean = true;
 
     constructor(scene: MainScene, windowId: WindowID) {
         this.windowId = windowId;
@@ -46,12 +47,35 @@ export class Player {
             this.tileY * this.tileSize + this.tileSize / 2,
             'player'
         ).setDisplaySize(32, 32);
-    }
 
+        this.isInWindow = windowId === 'left';
+        this.sprite.alpha = this.isInWindow ? 1 : 0;
+        this.setupBridgeListeners(scene);
+    }
+    
     public getSprite() {
         return this.sprite;
     }
 
+    private setupBridgeListeners(scene: Phaser.Scene): void {
+        const handlePlayerUpdate = (data: PlayerPositionData) => {
+            if (data.windowId === this.windowId) {
+                this.isInWindow = true;
+                this.sprite.alpha = 1;
+            }
+            else {
+                this.isInWindow = false;
+                this.sprite.alpha = 0;
+            }
+            this.sprite.setPosition(data.x, data.y);
+        };
+        gameBridge.on(Events.PLAYER_POSITION_UPDATE, handlePlayerUpdate);
+        scene.events.on(Phaser.Scenes.Events.SHUTDOWN, () => {
+            console.log(`[${this.windowId}] Shutting down scene, removing bridge listener.`);
+            gameBridge.off(Events.PLAYER_POSITION_UPDATE, handlePlayerUpdate);
+        });
+    }
+    
     public update(delta: number) {
         // Only allow one move per key press
         if (!this.cursors.left.isDown && !this.cursors.right.isDown && !this.cursors.up.isDown && !this.cursors.down.isDown &&
@@ -59,6 +83,9 @@ export class Player {
             !this.keyZ.isDown && !this.keyQ.isDown) {
             this._moveLock = false;
         }
+            
+        if (!this.isInWindow) return;
+        
         if (this._moveLock) return;
         let dx = 0, dy = 0;
         if (this.cursors.left.isDown || this.keyA.isDown || this.keyQ.isDown) dx = -1;
@@ -72,13 +99,26 @@ export class Player {
             let ty = this.tileY;
             let lastEmptyX = tx;
             let lastEmptyY = ty;
-            let maxIt = 20;
+            let maxIt = 100; // Just to be sure it ends.
+            let currentWindowId = this.windowId;
             while (maxIt-- > 0) {
-                const nextX = tx + dx;
+                let nextX = tx + dx;
                 const nextY = ty + dy;
-                if (!this.mainScene.isTileEmptyOrInvalid(nextX, nextY, this.windowId)) {
+                if (!this.mainScene.isTileEmptyOrInvalid(nextX, nextY, currentWindowId)) {
+                    const currentTilemapDataWidth = this.mainScene.currentTilemapDataWidth();
+                    if (currentWindowId === 'left' && currentTilemapDataWidth && nextX >= currentTilemapDataWidth) {
+                        tx = -1;
+                        currentWindowId = 'right';
+                        continue;
+                    }
+                    else if (currentWindowId === 'right' && currentTilemapDataWidth && nextX < 0) {
+                        tx = currentTilemapDataWidth;
+                        currentWindowId = 'left';
+                        continue;
+                    }
                     break;
                 }
+                
                 lastEmptyX = nextX;
                 lastEmptyY = nextY;
                 tx = nextX;
@@ -91,6 +131,11 @@ export class Player {
                     this.tileX * this.tileSize + this.tileSize / 2,
                     this.tileY * this.tileSize + this.tileSize / 2
                 );
+               gameBridge.emit(Events.PLAYER_POSITION_UPDATE, {
+                    x: this.tileX * this.tileSize + this.tileSize / 2,
+                    y: this.tileY * this.tileSize + this.tileSize / 2,
+                    windowId: currentWindowId
+                });
             }
         }
     }
