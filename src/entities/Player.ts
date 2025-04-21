@@ -79,8 +79,9 @@ export class Player {
         const up = Input.isPressed('ArrowUp') || Input.isPressed('KeyW') || Input.isPressed('KeyZ');
         const down = Input.isPressed('ArrowDown') || Input.isPressed('KeyS');
         const undo = Input.isPressed('KeyU');
+        const restart = Input.isPressed('KeyR');
 
-        if (!left && !right && !up && !down && !undo) {
+        if (!left && !right && !up && !down && !undo && !restart) {
             this._moveLock = false;
         }
 
@@ -89,6 +90,11 @@ export class Player {
         if (undo) {
             this._moveLock = true;
             undoManager.undo();
+            return;
+        }
+        if (restart) {
+            this._moveLock = true;
+            undoManager.undoAll();
             return;
         }
         let dx = 0, dy = 0;
@@ -116,7 +122,6 @@ export class Player {
                 nextY += weightManager.rightWeight - weightManager.leftWeight;
                 currentWindowId = 'left';
             }
-            console.log(`[${this.windowId}] Next tile: ${nextX}, ${nextY} in window: ${currentWindowId}`);
             // --- Box pushing logic ---
             const boxAtNext = this.mainScene.getBoxAt(nextX, nextY, currentWindowId);
             if (boxAtNext) {

@@ -15,10 +15,11 @@ export class Box extends LevelElement {
     spriteKey: string;
     tileSize: number;
     spawned: boolean = false;
+    boxType: string;
     private windowId: WindowID;
     private scene: Phaser.Scene | null = null;
 
-    constructor(tileX: number, tileY: number, weight: number, windowId: WindowID, spriteKey: string = "box") {
+    constructor(tileX: number, tileY: number, weight: number, windowId: WindowID, spriteKey: string = "box", boxType: string = "default") {
         super();
         this.boxId = Box.nextBoxId++;
         this.tileX = tileX;
@@ -27,6 +28,7 @@ export class Box extends LevelElement {
         this.spriteKey = spriteKey;
         this.tileSize = 0;
         this.windowId = windowId;
+        this.boxType = boxType;
     }
     
     spawn(scene: Phaser.Scene, windowId: WindowID): void {

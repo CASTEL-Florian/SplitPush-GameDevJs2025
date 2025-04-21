@@ -53,6 +53,12 @@ export class UndoManager {
         this.steps = [];
         this.currentStep = [];
     }
+
+    undoAll(): void {
+        while (this.steps.length > 0) {
+            this.undo();
+        }
+    }
 }
 
 export const undoManager = new UndoManager();

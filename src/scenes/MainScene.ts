@@ -20,13 +20,25 @@ export default class MainScene extends Phaser.Scene {
         return level.elements.filter(e => e.constructor.name === 'Box') as import("../entities/Box").Box[];
     }
 
+    public getAllTargets(windowId: WindowID): import("../entities/BoxTarget").BoxTarget[] {
+        const levelArr = windowId === 'left' ? levelManager.leftLevels : levelManager.rightLevels;
+        const level = levelArr[this.lastLevelIndex];
+        if (!level) return [];
+        // Only return elements that are BoxTarget
+        return level.elements.filter(e => e.constructor.name === 'BoxTarget') as import("../entities/BoxTarget").BoxTarget[];
+    }
+
     /**
      * Returns the Box at the given tile, or undefined if none exists.
      */
     public getBoxAt(tileX: number, tileY: number, windowId: WindowID): import("../entities/Box").Box | undefined {
         return this.getAllBoxes(windowId).find(box => box.tileX === tileX && box.tileY === tileY);
     }
-
+    
+    public getBoxTargetAt(tileX: number, tileY: number, windowId: WindowID): import("../entities/BoxTarget").BoxTarget | undefined {
+        return this.getAllTargets(windowId).find(target => target.tileX === tileX && target.tileY === tileY);
+    }
+    
     private windowId!: WindowID; // 'left' or 'right' - set during init
     private player!: Player;
     private lastLevelIndex: number = 0;
@@ -58,6 +70,7 @@ export default class MainScene extends Phaser.Scene {
         this.load.image('darkTeleporter', 'assets/darkTeleporter.png');
         this.load.image('tiles', 'assets/tiles.png');
         this.load.image('box', 'assets/box.png');
+        this.load.image('box_target', 'assets/box_target.png');
         if (this.windowId === 'left') {
             this.load.audio('mainMusic', 'assets/Pixel-Balloons_v2.mp3');
         }
