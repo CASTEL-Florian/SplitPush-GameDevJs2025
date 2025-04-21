@@ -1,4 +1,4 @@
-import { LevelElement } from "./LevelElement";
+import { LevelElement } from "../levels/LevelElement";
 import { gameBridge, Events, BoxPositionData, WindowID } from "../GameBridge";
 import Phaser from "phaser";
 import { getTileSize } from "../levels/LevelManager";

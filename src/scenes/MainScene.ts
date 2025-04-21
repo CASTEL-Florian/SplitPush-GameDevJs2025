@@ -4,7 +4,7 @@ import { Events, WindowID } from '../GameBridge'; // Make sure path is correct
 import { Player } from '../entities/Player';
 import { levelManager } from '../levels/LevelManager';
 import { weightManager } from '../WeightManager';
-import { Box } from '../levels/Box';
+import { Box } from '../entities/Box';
 import { BoxPositionData } from '../GameBridge';
 import { gameBridge } from '../GameBridge';
 
@@ -12,18 +12,18 @@ export default class MainScene extends Phaser.Scene {
     /**
      * Returns all Box instances in the current level.
      */
-    public getAllBoxes(windowId: WindowID): import("../levels/Box").Box[] {
+    public getAllBoxes(windowId: WindowID): import("../entities/Box").Box[] {
         const levelArr = windowId === 'left' ? levelManager.leftLevels : levelManager.rightLevels;
         const level = levelArr[this.lastLevelIndex];
         if (!level) return [];
         // Only return elements that are Box
-        return level.elements.filter(e => e.constructor.name === 'Box') as import("../levels/Box").Box[];
+        return level.elements.filter(e => e.constructor.name === 'Box') as import("../entities/Box").Box[];
     }
 
     /**
      * Returns the Box at the given tile, or undefined if none exists.
      */
-    public getBoxAt(tileX: number, tileY: number, windowId: WindowID): import("../levels/Box").Box | undefined {
+    public getBoxAt(tileX: number, tileY: number, windowId: WindowID): import("../entities/Box").Box | undefined {
         return this.getAllBoxes(windowId).find(box => box.tileX === tileX && box.tileY === tileY);
     }
 

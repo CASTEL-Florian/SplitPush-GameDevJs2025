@@ -6,7 +6,7 @@ import { getTileSize } from '../levels/LevelManager';
 import { undoManager } from '../undo/UndoManager';
 import { PlayerStateUndoable } from './PlayerStateUndoable';
 import { WeightUndoable } from './WeightUndoable';
-import { BoxUndoable } from '../levels/BoxUndoable';
+import { BoxUndoable } from './BoxUndoable';
 
 const PLAYER_MAX_SPEED = 200;
 const PLAYER_ACCELERATION = 800;

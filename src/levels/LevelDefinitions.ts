@@ -1,5 +1,5 @@
 import { LevelDef } from "./LevelManager";
-import { Box } from "./Box";
+import { Box } from "../entities/Box";
 
 // Create a level with one orb in each window
 export const leftLevel1: LevelDef = {
