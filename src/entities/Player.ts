@@ -45,7 +45,6 @@ export class Player {
 
     private setupBridgeListeners(scene: Phaser.Scene): void {
         const handlePlayerUpdate = (data: PlayerPositionData) => {
-            console.log(`[${this.windowId}] Received position update:`, data);
             this._moveLock = true;
             if (data.windowId === this.windowId) {
                 this.isInWindow = true;
@@ -127,7 +126,6 @@ export class Player {
                         checkY += weightManager.rightWeight - weightManager.leftWeight;
                         currentBoxWindowId = 'left';
                     }
-                    console.log(`[${this.windowId}] Checking box at: ${checkX}, ${checkY} in window: ${currentBoxWindowId}`);
                     const box = this.mainScene.getBoxAt(checkX, checkY, currentBoxWindowId);
                     if (!box) break;
                     boxesToPush.push(box);

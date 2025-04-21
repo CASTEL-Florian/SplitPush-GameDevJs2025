@@ -2,7 +2,7 @@ import { LevelElement } from "./LevelElement";
 import { gameBridge, Events, BoxPositionData, WindowID } from "../GameBridge";
 import Phaser from "phaser";
 import { getTileSize } from "../levels/LevelManager";
-import { WeightManager } from "../WeightManager";
+import { weightManager, WeightManager } from "../WeightManager";
 import { leftLevels, rightLevels } from "../levels/LevelDefinitions";
 
 export class Box extends LevelElement {
@@ -117,6 +117,14 @@ export class Box extends LevelElement {
                 boxId: this.boxId,
                 windowId: destWindowId
             });
+            if (destWindowId === 'left'){
+                weightManager.leftWeight += this.weight;
+                weightManager.rightWeight -= this.weight;
+            }
+            else {
+                weightManager.rightWeight += this.weight;
+                weightManager.leftWeight -= this.weight;
+            }
         }
         
         

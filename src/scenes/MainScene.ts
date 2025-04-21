@@ -82,16 +82,32 @@ export default class MainScene extends Phaser.Scene {
         this.player = new Player(this, this.windowId);
 
         // Set up the callback to update the window position when weights change
-        weightManager.onWeightChange = (wm) => {
-            // Move the actual HTML container (not the camera)
-            const containerId = this.windowId === 'left' ? 'game-container-left' : 'game-container-right';
-            const container = document.getElementById(containerId);
-            if (container) {
-                // Calculate the new Y position
-                const y = wm.getInitialY() + (this.windowId === 'left' ? 1 : -1) * wm.getDeltaPixels();
-                container.style.transform = `translateY(${y}px)`;
-            }
-        };
+        if (this.windowId === 'left'){
+            weightManager.onWeightChangeLeft = (wm) => {
+                // Move the actual HTML container (not the camera)
+                console.log(`[${this.windowId}] Updating window position`);
+                const containerId = this.windowId === 'left' ? 'game-container-left' : 'game-container-right';
+                const container = document.getElementById(containerId);
+                if (container) {
+                    // Calculate the new Y position
+                    const y = wm.getInitialY() + (this.windowId === 'left' ? 1 : -1) * wm.getDeltaPixels();
+                    container.style.transform = `translateY(${y}px)`;
+                }
+            };
+        }
+        if (this.windowId === 'right'){
+            weightManager.onWeightChangeRight = (wm) => {
+                // Move the actual HTML container (not the camera)
+                console.log(`[${this.windowId}] Updating window position`);
+                const containerId = this.windowId === 'left' ? 'game-container-left' : 'game-container-right';
+                const container = document.getElementById(containerId);
+                if (container) {
+                    // Calculate the new Y position
+                    const y = wm.getInitialY() + (this.windowId === 'left' ? 1 : -1) * wm.getDeltaPixels();
+                    container.style.transform = `translateY(${y}px)`;
+                }
+            };
+        }
         // Set initial container position
         {
             const containerId = this.windowId === 'left' ? 'game-container-left' : 'game-container-right';

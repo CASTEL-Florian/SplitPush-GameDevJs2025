@@ -12,7 +12,8 @@ export class WeightManager {
      * Example usage:
      *   weightManager.onWeightChange = (wm) => { ...update window positions... }
      */
-    public onWeightChange?: (wm: WeightManager) => void;
+    public onWeightChangeLeft?: (wm: WeightManager) => void;
+    public onWeightChangeRight?: (wm: WeightManager) => void;
 
     /**
      * Returns the initial Y position for both windows when weight difference is zero.
@@ -34,7 +35,8 @@ export class WeightManager {
 
     set leftWeight(value: number) {
         this._leftWeight = value;
-        if (this.onWeightChange) this.onWeightChange(this);
+        if (this.onWeightChangeLeft) this.onWeightChangeLeft(this);
+        if (this.onWeightChangeRight) this.onWeightChangeRight(this);
     }
 
     get rightWeight(): number {
@@ -43,7 +45,7 @@ export class WeightManager {
 
     set rightWeight(value: number) {
         this._rightWeight = value;
-        if (this.onWeightChange) this.onWeightChange(this);
+        if (this.onWeightChangeRight) this.onWeightChangeRight(this);
     }
 
     getDeltaPixels(): number {
