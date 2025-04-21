@@ -6,6 +6,23 @@ import { levelManager } from '../levels/LevelManager';
 import { weightManager } from '../WeightManager';
 
 export default class MainScene extends Phaser.Scene {
+    /**
+     * Returns all Box instances in the current level.
+     */
+    public getAllBoxes(): import("../levels/Box").Box[] {
+        const levelArr = this.windowId === 'left' ? levelManager.leftLevels : levelManager.rightLevels;
+        const level = levelArr[this.lastLevelIndex];
+        if (!level) return [];
+        // Only return elements that are Box
+        return level.elements.filter(e => e.constructor.name === 'Box') as import("../levels/Box").Box[];
+    }
+
+    /**
+     * Returns the Box at the given tile, or undefined if none exists.
+     */
+    public getBoxAt(tileX: number, tileY: number): import("../levels/Box").Box | undefined {
+        return this.getAllBoxes().find(box => box.tileX === tileX && box.tileY === tileY);
+    }
     private windowId!: WindowID; // 'left' or 'right' - set during init
     private player!: Player;
     private lastLevelIndex: number = 0;

@@ -5,7 +5,7 @@ import { Box } from "./Box";
 export const leftLevel1: LevelDef = {
     elements: [
         new Box(5, 6, 2), // tileX, tileY, weight
-        new Box(8, 4, 3)
+        new Box(5, 4, 3)
     ],
     tilemapPath: 'assets/level1.json'
 };
@@ -13,7 +13,7 @@ export const leftLevel1: LevelDef = {
 export const rightLevel1: LevelDef = {
     elements: [
         new Box(3, 7, 1),
-        new Box(10, 2, 4)
+        new Box(3, 10, 4)
     ],
     tilemapPath: 'assets/level2.json'
 };

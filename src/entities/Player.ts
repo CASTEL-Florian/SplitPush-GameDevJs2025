@@ -108,10 +108,41 @@ export class Player {
                 currentWindowId = 'left';
             }
             console.log(`[${this.windowId}] Next tile: ${nextX}, ${nextY} in window: ${currentWindowId}`);
-            if (!this.mainScene.isTileEmptyOrInvalid(nextX, nextY, currentWindowId)) {
+            // --- Box pushing logic ---
+            const boxAtNext = this.mainScene.getBoxAt(nextX, nextY);
+            if (boxAtNext) {
+                // Collect all contiguous boxes in the push direction
+                let boxesToPush: any[] = [];
+                let checkX = nextX;
+                let checkY = nextY;
+                while (true) {
+                    const box = this.mainScene.getBoxAt(checkX, checkY);
+                    if (!box) break;
+                    boxesToPush.push(box);
+                    checkX += dx;
+                    checkY += dy;
+                }
+                // Check if the tile after the last box is empty
+                if (!this.mainScene.isTileEmptyOrInvalid(checkX, checkY, currentWindowId)) {
+                    return; // Blocked, can't push
+                }
+                // Move all boxes forward (last to first, so no overwrite)
+                for (let i = boxesToPush.length - 1; i >= 0; i--) {
+                    const box = boxesToPush[i];
+                    box.tileX += dx;
+                    box.tileY += dy;
+                    if (box.sprite) {
+                        box.sprite.setPosition(
+                            box.tileX * box.tileSize + box.tileSize / 2,
+                            box.tileY * box.tileSize + box.tileSize / 2
+                        );
+                    }
+                }
+            } else if (!this.mainScene.isTileEmptyOrInvalid(nextX, nextY, currentWindowId)) {
                 return;
             }
 
+            // Move player
             this.tileX = nextX;
             this.tileY = nextY;
             this.sprite.setPosition(
@@ -123,7 +154,6 @@ export class Player {
                 y: this.tileY,
                 windowId: currentWindowId
             });
-            
         }
     }
     private _moveLock: boolean = false;
