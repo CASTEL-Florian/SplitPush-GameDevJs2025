@@ -57,6 +57,8 @@ export const Events = {
 
     // Player events
     PLAYER_POSITION_UPDATE: 'player-position-update', // <-- Add this event
+    BOX_POSITION_UPDATE: 'box-position-update',
+    BOX_RESPAWN: 'box-respawn',
 };
 
 // --- Define Shared Types ---
@@ -66,5 +68,12 @@ export type WindowID = 'left' | 'right' | 'undefined';
 export type PlayerPositionData = {
     x: number;
     y: number;
+    windowId: WindowID;
+};
+
+export type BoxPositionData = {
+    x: number;
+    y: number;
+    boxId: number;
     windowId: WindowID;
 };

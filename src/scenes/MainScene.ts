@@ -4,13 +4,16 @@ import { Events, WindowID } from '../GameBridge'; // Make sure path is correct
 import { Player } from '../entities/Player';
 import { levelManager } from '../levels/LevelManager';
 import { weightManager } from '../WeightManager';
+import { Box } from '../levels/Box';
+import { BoxPositionData } from '../GameBridge';
+import { gameBridge } from '../GameBridge';
 
 export default class MainScene extends Phaser.Scene {
     /**
      * Returns all Box instances in the current level.
      */
-    public getAllBoxes(): import("../levels/Box").Box[] {
-        const levelArr = this.windowId === 'left' ? levelManager.leftLevels : levelManager.rightLevels;
+    public getAllBoxes(windowId: WindowID): import("../levels/Box").Box[] {
+        const levelArr = windowId === 'left' ? levelManager.leftLevels : levelManager.rightLevels;
         const level = levelArr[this.lastLevelIndex];
         if (!level) return [];
         // Only return elements that are Box
@@ -20,9 +23,10 @@ export default class MainScene extends Phaser.Scene {
     /**
      * Returns the Box at the given tile, or undefined if none exists.
      */
-    public getBoxAt(tileX: number, tileY: number): import("../levels/Box").Box | undefined {
-        return this.getAllBoxes().find(box => box.tileX === tileX && box.tileY === tileY);
+    public getBoxAt(tileX: number, tileY: number, windowId: WindowID): import("../levels/Box").Box | undefined {
+        return this.getAllBoxes(windowId).find(box => box.tileX === tileX && box.tileY === tileY);
     }
+
     private windowId!: WindowID; // 'left' or 'right' - set during init
     private player!: Player;
     private lastLevelIndex: number = 0;
@@ -102,12 +106,26 @@ export default class MainScene extends Phaser.Scene {
         // Create LevelManager with all levels and load the first level
         this.lastLevelIndex = 0;
         levelManager.spawn(this.lastLevelIndex, this, this.windowId);
+        this.setupBridgeListeners(this);
     }
 
-    // --- Input Handling Method ---
-    private handleInput(): void {
-        
-    }
+    private setupBridgeListeners(scene: Phaser.Scene): void {
+            const handleBoxUpdate = (data: BoxPositionData) => {
+                if (data.windowId != this.windowId) {
+                    console.log(`[${this.windowId}] Box respawned in other window, ignoring.`);
+                    return;
+                }
+                console.log(`[${this.windowId}] Box respawned at ${data.x}, ${data.y}`);
+                const box = this.getAllBoxes(this.windowId).find(b => b.boxId === data.boxId);
+                box?.spawn(scene, this.windowId);
+
+            };
+            gameBridge.on(Events.BOX_RESPAWN, handleBoxUpdate);
+            scene.events.on(Phaser.Scenes.Events.SHUTDOWN, () => {
+                console.log(`[${this.windowId}] Shutting down scene, removing bridge listener.`);
+                gameBridge.off(Events.BOX_RESPAWN, handleBoxUpdate);
+            });
+        }
 
     public isTileEmptyOrInvalid(tileX: number, tileY: number, windowId: WindowID): boolean {
         if (!levelManager) return true;

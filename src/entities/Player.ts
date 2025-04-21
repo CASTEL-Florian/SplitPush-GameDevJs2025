@@ -109,34 +109,39 @@ export class Player {
             }
             console.log(`[${this.windowId}] Next tile: ${nextX}, ${nextY} in window: ${currentWindowId}`);
             // --- Box pushing logic ---
-            const boxAtNext = this.mainScene.getBoxAt(nextX, nextY);
+            const boxAtNext = this.mainScene.getBoxAt(nextX, nextY, currentWindowId);
             if (boxAtNext) {
                 // Collect all contiguous boxes in the push direction
                 let boxesToPush: any[] = [];
                 let checkX = nextX;
                 let checkY = nextY;
+                let currentBoxWindowId = currentWindowId;
                 while (true) {
-                    const box = this.mainScene.getBoxAt(checkX, checkY);
+                    if (currentBoxWindowId === 'left' && currentTilemapDataWidth && checkX >= currentTilemapDataWidth) {
+                        checkX = 0;
+                        checkY += weightManager.leftWeight - weightManager.rightWeight;
+                        currentBoxWindowId = 'right';
+                    }
+                    else if (currentBoxWindowId === 'right' && currentTilemapDataWidth && checkX < 0) {
+                        checkX = currentTilemapDataWidth - 1;
+                        checkY += weightManager.rightWeight - weightManager.leftWeight;
+                        currentBoxWindowId = 'left';
+                    }
+                    console.log(`[${this.windowId}] Checking box at: ${checkX}, ${checkY} in window: ${currentBoxWindowId}`);
+                    const box = this.mainScene.getBoxAt(checkX, checkY, currentBoxWindowId);
                     if (!box) break;
                     boxesToPush.push(box);
                     checkX += dx;
                     checkY += dy;
                 }
                 // Check if the tile after the last box is empty
-                if (!this.mainScene.isTileEmptyOrInvalid(checkX, checkY, currentWindowId)) {
+                if (!this.mainScene.isTileEmptyOrInvalid(checkX, checkY, currentBoxWindowId)) {
                     return; // Blocked, can't push
                 }
                 // Move all boxes forward (last to first, so no overwrite)
                 for (let i = boxesToPush.length - 1; i >= 0; i--) {
                     const box = boxesToPush[i];
-                    box.tileX += dx;
-                    box.tileY += dy;
-                    if (box.sprite) {
-                        box.sprite.setPosition(
-                            box.tileX * box.tileSize + box.tileSize / 2,
-                            box.tileY * box.tileSize + box.tileSize / 2
-                        );
-                    }
+                    box.moveBox(dx, dy, currentTilemapDataWidth, weightManager);
                 }
             } else if (!this.mainScene.isTileEmptyOrInvalid(nextX, nextY, currentWindowId)) {
                 return;
