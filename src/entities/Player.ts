@@ -92,56 +92,38 @@ export class Player {
             // Find last empty tile in this direction
             let tx = this.tileX;
             let ty = this.tileY;
-            let lastEmptyX = tx;
-            let lastEmptyY = ty;
-            let maxIt = 100; // Just to be sure it ends.
             let currentWindowId = this.windowId;
-            let isEnteringOtherWindow = false;
-            while (maxIt-- > 0) {
-                let nextX = tx + dx;
-                const nextY = ty + dy;
-                console.log("Checking tile:", nextX, nextY, currentWindowId, this.windowId);
-                if (!this.mainScene.isTileEmptyOrInvalid(nextX, nextY, currentWindowId)) {
-                    const currentTilemapDataWidth = this.mainScene.currentTilemapDataWidth();
-                    if (currentWindowId === 'left' && currentTilemapDataWidth && nextX >= currentTilemapDataWidth) {
-                        tx = -1;
-                        ty += weightManager.leftWeight - weightManager.rightWeight;
-                        currentWindowId = 'right';
-                        isEnteringOtherWindow = true;
-                        continue;
-                    }
-                    else if (currentWindowId === 'right' && currentTilemapDataWidth && nextX < 0) {
-                        tx = currentTilemapDataWidth;
-                        ty += weightManager.rightWeight - weightManager.leftWeight;
-                        currentWindowId = 'left';
-                        isEnteringOtherWindow = true;
-                        continue;
-                    }
-                    if (isEnteringOtherWindow) {
-                        currentWindowId = currentWindowId === 'left' ? 'right' : 'left';
-                    }
-                    break;
-                }
-                
-                isEnteringOtherWindow = false;
-                lastEmptyX = nextX;
-                lastEmptyY = nextY;
-                tx = nextX;
-                ty = nextY;
+
+            let nextX = tx + dx;
+            let nextY = ty + dy;
+            const currentTilemapDataWidth = this.mainScene.currentTilemapDataWidth();
+            if (currentWindowId === 'left' && currentTilemapDataWidth && nextX >= currentTilemapDataWidth) {
+                nextX = 0;
+                nextY += weightManager.leftWeight - weightManager.rightWeight;
+                currentWindowId = 'right';
             }
-            if (lastEmptyX !== this.tileX || lastEmptyY !== this.tileY || currentWindowId !== this.windowId) {
-                this.tileX = lastEmptyX;
-                this.tileY = lastEmptyY;
-                this.sprite.setPosition(
-                    this.tileX * this.tileSize + this.tileSize / 2,
-                    this.tileY * this.tileSize + this.tileSize / 2
-                );
-               gameBridge.emit(Events.PLAYER_POSITION_UPDATE, {
-                    x: this.tileX,
-                    y: this.tileY,
-                    windowId: currentWindowId
-                });
+            else if (currentWindowId === 'right' && currentTilemapDataWidth && nextX < 0) {
+                nextX = currentTilemapDataWidth - 1;
+                nextY += weightManager.rightWeight - weightManager.leftWeight;
+                currentWindowId = 'left';
             }
+            console.log(`[${this.windowId}] Next tile: ${nextX}, ${nextY} in window: ${currentWindowId}`);
+            if (!this.mainScene.isTileEmptyOrInvalid(nextX, nextY, currentWindowId)) {
+                return;
+            }
+
+            this.tileX = nextX;
+            this.tileY = nextY;
+            this.sprite.setPosition(
+                this.tileX * this.tileSize + this.tileSize / 2,
+                this.tileY * this.tileSize + this.tileSize / 2
+            );
+            gameBridge.emit(Events.PLAYER_POSITION_UPDATE, {
+                x: this.tileX,
+                y: this.tileY,
+                windowId: currentWindowId
+            });
+            
         }
     }
     private _moveLock: boolean = false;
