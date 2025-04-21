@@ -126,7 +126,46 @@ export class Box extends LevelElement {
                 weightManager.leftWeight -= this.weight;
             }
         }
-        
-        
+    }
+
+    public moveBoxToPosition(destX: number, destY: number, destWindowId: WindowID): void {
+        gameBridge.emit(Events.BOX_POSITION_UPDATE, {
+            x: destX,
+            y: destY,
+            boxId: this.boxId,
+            windowId: destWindowId
+        });
+        if (this.windowId != destWindowId){
+            // Remove the box from the level manager and add it to the new window
+            this.despawn(this.scene!);
+            const previousArray = this.windowId === 'left' ? leftLevels : rightLevels;
+            const newArray = destWindowId === 'left' ? leftLevels : rightLevels;
+            // Remove this box from the previous LevelDef's elements array
+            for (const levelDef of previousArray) {
+                const idx = levelDef.elements.indexOf(this);
+                if (idx !== -1) {
+                    levelDef.elements.splice(idx, 1);
+                    break;
+                }
+            }
+            // Add this box to the new LevelDef's elements array (first level for now)
+            if (newArray.length > 0) {
+                newArray[0].elements.push(this);
+            }
+            gameBridge.emit(Events.BOX_RESPAWN, {
+                x: destX,
+                y: destY,
+                boxId: this.boxId,
+                windowId: destWindowId
+            });
+            if (destWindowId === 'left'){
+                weightManager.leftWeight += this.weight;
+                weightManager.rightWeight -= this.weight;
+            }
+            else {
+                weightManager.rightWeight += this.weight;
+                weightManager.leftWeight -= this.weight;
+            }
+        }
     }
 }

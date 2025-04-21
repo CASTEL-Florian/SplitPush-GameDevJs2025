@@ -3,6 +3,10 @@ import { Events, PlayerPositionData, WindowID, gameBridge } from '../GameBridge'
 import MainScene from '../scenes/MainScene';
 import { weightManager } from '../WeightManager';
 import { getTileSize } from '../levels/LevelManager';
+import { undoManager } from '../undo/UndoManager';
+import { PlayerStateUndoable } from './PlayerStateUndoable';
+import { WeightUndoable } from './WeightUndoable';
+import { BoxUndoable } from '../levels/BoxUndoable';
 
 const PLAYER_MAX_SPEED = 200;
 const PLAYER_ACCELERATION = 800;
@@ -74,13 +78,19 @@ export class Player {
         const right = Input.isPressed('ArrowRight') || Input.isPressed('KeyD');
         const up = Input.isPressed('ArrowUp') || Input.isPressed('KeyW') || Input.isPressed('KeyZ');
         const down = Input.isPressed('ArrowDown') || Input.isPressed('KeyS');
+        const undo = Input.isPressed('KeyU');
 
-        if (!left && !right && !up && !down) {
+        if (!left && !right && !up && !down && !undo) {
             this._moveLock = false;
         }
 
         if (!this.isInWindow) return;
         if (this._moveLock) return;
+        if (undo) {
+            this._moveLock = true;
+            undoManager.undo();
+            return;
+        }
         let dx = 0, dy = 0;
         if (left) dx = -1;
         else if (right) dx = 1;
@@ -139,19 +149,14 @@ export class Player {
                 // Move all boxes forward (last to first, so no overwrite)
                 for (let i = boxesToPush.length - 1; i >= 0; i--) {
                     const box = boxesToPush[i];
+                    undoManager.register(new BoxUndoable(box.tileX, box.tileY, box.windowId, box));
                     box.moveBox(dx, dy, currentTilemapDataWidth, weightManager);
                 }
             } else if (!this.mainScene.isTileEmptyOrInvalid(nextX, nextY, currentWindowId)) {
                 return;
             }
 
-            // Move player
-            this.tileX = nextX;
-            this.tileY = nextY;
-            this.sprite.setPosition(
-                this.tileX * this.tileSize + this.tileSize / 2,
-                this.tileY * this.tileSize + this.tileSize / 2
-            );
+            undoManager.register(new WeightUndoable(weightManager.leftWeight, weightManager.rightWeight));
             if (this.windowId != currentWindowId){
                 if (currentWindowId === 'left'){
                     weightManager.leftWeight += 0.5;
@@ -162,9 +167,11 @@ export class Player {
                     weightManager.leftWeight -= 0.5;
                 }
             }
+            undoManager.register(new PlayerStateUndoable(this.tileX, this.tileY, this.windowId));
+            undoManager.beginNewStep();
             gameBridge.emit(Events.PLAYER_POSITION_UPDATE, {
-                x: this.tileX,
-                y: this.tileY,
+                x: nextX,
+                y: nextY,
                 windowId: currentWindowId
             });
         }
