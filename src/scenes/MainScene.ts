@@ -131,7 +131,7 @@ export default class MainScene extends Phaser.Scene {
             }
         }
         weightManager.leftWeight = 1;
-        weightManager.rightWeight = 2;
+        weightManager.rightWeight = 1;
 
         // Create LevelManager with all levels and load the first level
         this.lastLevelIndex = 0;

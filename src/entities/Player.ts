@@ -152,6 +152,16 @@ export class Player {
                 this.tileX * this.tileSize + this.tileSize / 2,
                 this.tileY * this.tileSize + this.tileSize / 2
             );
+            if (this.windowId != currentWindowId){
+                if (currentWindowId === 'left'){
+                    weightManager.leftWeight += 0.5;
+                    weightManager.rightWeight -= 0.5;
+                }
+                else {
+                    weightManager.rightWeight += 0.5;
+                    weightManager.leftWeight -= 0.5;
+                }
+            }
             gameBridge.emit(Events.PLAYER_POSITION_UPDATE, {
                 x: this.tileX,
                 y: this.tileY,

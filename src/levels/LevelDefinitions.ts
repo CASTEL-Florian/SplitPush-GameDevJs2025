@@ -4,16 +4,16 @@ import { Box } from "./Box";
 // Create a level with one orb in each window
 export const leftLevel1: LevelDef = {
     elements: [
-        new Box(5, 6, 1, 'left'), // tileX, tileY, weight
-        new Box(5, 4, 1, 'left')
+        new Box(5, 6, 0.5, 'left'), // tileX, tileY, weight
+        new Box(5, 4, 0.5, 'left')
     ],
     tilemapPath: 'assets/level1.json'
 };
 
 export const rightLevel1: LevelDef = {
     elements: [
-        new Box(3, 7, 1, 'right'),
-        new Box(3, 10, 1, 'right')
+        new Box(3, 7, 0.5, 'right'),
+        new Box(3, 10, 0.5, 'right')
     ],
     tilemapPath: 'assets/level2.json'
 };
