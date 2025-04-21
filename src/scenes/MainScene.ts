@@ -30,6 +30,7 @@ export default class MainScene extends Phaser.Scene {
     private windowId!: WindowID; // 'left' or 'right' - set during init
     private player!: Player;
     private lastLevelIndex: number = 0;
+    private mainMusic?: Phaser.Sound.BaseSound; // Reference to looping music
 
     constructor() {
         super({ key: 'MainScene' });
@@ -57,14 +58,27 @@ export default class MainScene extends Phaser.Scene {
         this.load.image('darkTeleporter', 'assets/darkTeleporter.png');
         this.load.image('tiles', 'assets/tiles.png');
         this.load.image('box', 'assets/box.png');
+        if (this.windowId === 'left') {
+            this.load.audio('mainMusic', 'assets/Pixel-Balloons_v2.mp3');
+        }
     }
 
     create(): void {
         // Setup game elements (player and physics bounds)
         this.setupGame();
 
+        // Play looping music if windowId is 'left'
+        if (this.windowId === 'left') {
+            if (!this.mainMusic) {
+                this.mainMusic = this.sound.add('mainMusic', { loop: true, volume: 0.5 });
+                this.mainMusic.play();
+            } else if (!this.mainMusic.isPlaying) {
+                this.mainMusic.play();
+            }
+        }
+
         // Optional: Add background color for visual distinction
-        this.cameras.main.setBackgroundColor(this.windowId === 'left' ? '#ddddff' : '#ddffdd');
+        this.cameras.main.setBackgroundColor(this.windowId === 'left' ? '#92C5C6' : '#FBBD82');
         this.add.text(10, 10, `Window: ${this.windowId}`, { color: '#000000', fontSize: '16px' });
         console.log(`[${this.windowId}] Scene Created`);
     }
