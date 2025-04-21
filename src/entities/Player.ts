@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { Events, PlayerPositionData, WindowID, gameBridge } from '../GameBridge';
 import MainScene from '../scenes/MainScene';
 import { weightManager } from '../WeightManager';
+import { getTileSize } from '../levels/LevelManager';
 
 const PLAYER_MAX_SPEED = 200;
 const PLAYER_ACCELERATION = 800;
@@ -23,8 +24,7 @@ export class Player {
         this.tileX = 4;
         this.tileY = 4;
         // Get tile size from LevelManager
-        // @ts-ignore
-        this.tileSize = require('../levels/LevelManager').getTileSize();
+        this.tileSize = getTileSize();
         // Get MainScene reference
         this.mainScene = scene;
         // Place sprite at correct position
