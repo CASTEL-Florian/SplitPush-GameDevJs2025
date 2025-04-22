@@ -1,5 +1,5 @@
-export const WINDOW_WIDTH = 320;
-export const WINDOW_HEIGHT = 480;
+export const WINDOW_WIDTH = 324;
+export const WINDOW_HEIGHT = 486;
 
 import Phaser from 'phaser';
 import MainScene from './scenes/MainScene';

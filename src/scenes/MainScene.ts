@@ -133,7 +133,6 @@ export default class MainScene extends Phaser.Scene {
         if (this.windowId === 'left'){
             weightManager.onWeightChangeLeft = (wm) => {
                 // Move the actual HTML container (not the camera)
-                console.log(`[${this.windowId}] Updating window position`);
                 const containerId = this.windowId === 'left' ? 'game-container-left' : 'game-container-right';
                 const container = document.getElementById(containerId);
                 if (container) {
@@ -146,7 +145,6 @@ export default class MainScene extends Phaser.Scene {
         if (this.windowId === 'right'){
             weightManager.onWeightChangeRight = (wm) => {
                 // Move the actual HTML container (not the camera)
-                console.log(`[${this.windowId}] Updating window position`);
                 const containerId = this.windowId === 'left' ? 'game-container-left' : 'game-container-right';
                 const container = document.getElementById(containerId);
                 if (container) {

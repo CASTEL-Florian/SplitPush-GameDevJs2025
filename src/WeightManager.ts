@@ -46,6 +46,7 @@ export class WeightManager {
     set rightWeight(value: number) {
         this._rightWeight = value;
         if (this.onWeightChangeRight) this.onWeightChangeRight(this);
+        if (this.onWeightChangeLeft) this.onWeightChangeLeft(this);
     }
 
     getDeltaPixels(): number {
