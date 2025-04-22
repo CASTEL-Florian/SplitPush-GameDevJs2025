@@ -5,7 +5,6 @@ import { getTileSize } from "../levels/LevelManager";
 import { weightManager, WeightManager } from "../WeightManager";
 import { leftLevels, rightLevels } from "../levels/LevelDefinitions";
 import { targetManager } from "./TargetManager";
-import MainScene from "../scenes/MainScene";
 
 export class Box extends LevelElement {
     static nextBoxId = 1;

@@ -7,6 +7,8 @@ import { undoManager } from '../undo/UndoManager';
 import { PlayerStateUndoable } from './PlayerStateUndoable';
 import { WeightUndoable } from './WeightUndoable';
 import { BoxUndoable } from './BoxUndoable';
+import { TargetManagerUndoable } from './TargetManagerUndoable';
+import { targetManager } from './TargetManager';
 
 const PLAYER_MAX_SPEED = 200;
 const PLAYER_ACCELERATION = 800;

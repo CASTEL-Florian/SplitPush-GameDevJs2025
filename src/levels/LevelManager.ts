@@ -3,7 +3,7 @@ import { WindowID } from '../GameBridge';
 import { WINDOW_WIDTH} from '../game';
 import { leftLevels, rightLevels } from '../levels/LevelDefinitions';
 
-const TILEMAP_WIDTH = 8;
+const TILEMAP_WIDTH = 6;
 
 export interface LevelDef {
     elements: any[];

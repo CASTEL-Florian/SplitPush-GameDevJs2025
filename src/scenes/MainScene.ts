@@ -1,6 +1,6 @@
 // MainScene.ts
 import Phaser from 'phaser';
-import { Events, WindowID } from '../GameBridge'; // Make sure path is correct
+import { Events, WindowID } from '../GameBridge'
 import { Player } from '../entities/Player';
 import { levelManager } from '../levels/LevelManager';
 import { weightManager } from '../WeightManager';
@@ -43,6 +43,10 @@ export default class MainScene extends Phaser.Scene {
     private player!: Player;
     private lastLevelIndex: number = 0;
     private mainMusic?: Phaser.Sound.BaseSound; // Reference to looping music
+    private beatInterval: number = 1 / (95 / 60);
+    private isLastBeatOdd: boolean = false;
+    private lastBeat: number = 0;
+    private onBeatCallback?: () => void;
 
     constructor() {
         super({ key: 'MainScene' });
@@ -63,7 +67,7 @@ export default class MainScene extends Phaser.Scene {
 
 
     preload(): void {
-        this.load.image('player', 'assets/arrow.png');
+        this.load.image('player', 'assets/playerFront.png');
         this.load.image('lightOrb', 'assets/lightOrb.png');
         this.load.image('darkOrb', 'assets/darkOrb.png');
         this.load.image('lightTeleporter', 'assets/lightTeleporter.png');
@@ -88,6 +92,10 @@ export default class MainScene extends Phaser.Scene {
             } else if (!this.mainMusic.isPlaying) {
                 this.mainMusic.play();
             }
+            this.lastBeat = 0;
+            this.onBeatCallback = () => {
+                //console.log('Beat!');
+            };
         }
 
         // Optional: Add background color for visual distinction
@@ -99,6 +107,19 @@ export default class MainScene extends Phaser.Scene {
     update(time: number, delta: number): void {
         if (this.player) {
             this.player.update(delta);
+        }
+        // Beat tracking
+        if (this.windowId === 'left' && this.mainMusic && this.mainMusic.isPlaying) {
+            const currentTime = (this.mainMusic as Phaser.Sound.HTML5AudioSound).seek;
+            if (currentTime - this.lastBeat >= this.beatInterval) {
+                this.lastBeat += this.beatInterval;
+                this.isLastBeatOdd = !this.isLastBeatOdd;
+                if (this.onBeatCallback && this.isLastBeatOdd) this.onBeatCallback();
+            }
+            // Handle music restart or stop
+            if (currentTime < this.lastBeat) {
+                this.lastBeat = 0;
+            }
         }
     }
 

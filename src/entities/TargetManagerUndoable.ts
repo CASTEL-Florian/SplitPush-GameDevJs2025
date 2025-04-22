@@ -12,11 +12,6 @@ export class TargetManagerUndoable implements Undoable {
         this.prevTotalTargets = targetManager.getTotalTargets();
     }
 
-    captureState() {
-        this.prevCurrentTargets = this.targetManager.getCurrentTargets();
-        this.prevTotalTargets = this.targetManager.getTotalTargets();
-    }
-
     restoreState() {
         this.targetManager.setCurrentTargets(this.prevCurrentTargets);
         this.targetManager.setTotalTargets(this.prevTotalTargets);
