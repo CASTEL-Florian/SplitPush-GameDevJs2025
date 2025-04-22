@@ -4,6 +4,8 @@ import Phaser from "phaser";
 import { getTileSize } from "../levels/LevelManager";
 import { weightManager, WeightManager } from "../WeightManager";
 import { leftLevels, rightLevels } from "../levels/LevelDefinitions";
+import { targetManager } from "./TargetManager";
+import MainScene from "../scenes/MainScene";
 
 export class Box extends LevelElement {
     static nextBoxId = 1;
@@ -18,6 +20,11 @@ export class Box extends LevelElement {
     boxType: string;
     private windowId: WindowID;
     private scene: Phaser.Scene | null = null;
+    private static getBoxTargetAt: ((x: number, y: number, windowId: WindowID) => any) | null = null;
+
+    static setGetBoxTargetAt(fn: (x: number, y: number, windowId: WindowID) => any) {
+        Box.getBoxTargetAt = fn;
+    }
 
     constructor(tileX: number, tileY: number, weight: number, windowId: WindowID, spriteKey: string = "box", boxType: string = "default") {
         super();
@@ -75,6 +82,13 @@ export class Box extends LevelElement {
     }
 
     public moveBox(dx: number, dy: number, currentTilemapDataWidth: number, weightManager: WeightManager): void {
+        // --- Target check: before move ---
+        let prevTarget: any = null;
+        if (Box.getBoxTargetAt) {
+            prevTarget = Box.getBoxTargetAt(this.tileX, this.tileY, this.windowId);
+        }
+        const wasOnTarget = prevTarget && prevTarget.boxType === this.boxType;
+
         let destX = this.tileX + dx;
         let destY = this.tileY + dy;
         let destWindowId = this.windowId;
@@ -89,12 +103,28 @@ export class Box extends LevelElement {
             destWindowId = 'left';
         }
 
+        // --- Target check: after move ---
+        let newTarget: any = null;
+        if (Box.getBoxTargetAt) {
+            newTarget = Box.getBoxTargetAt(destX, destY, destWindowId);
+        }
+        const isOnTarget = newTarget && newTarget.boxType === this.boxType;
+
         gameBridge.emit(Events.BOX_POSITION_UPDATE, {
             x: destX,
             y: destY,
             boxId: this.boxId,
             windowId: destWindowId
         });
+
+        // --- Update TargetManager ---
+        if (targetManager) {
+            if (!wasOnTarget && isOnTarget) {
+                targetManager.incrementTargets();
+            } else if (wasOnTarget && !isOnTarget) {
+                targetManager.decrementTargets();
+            }
+        }
 
         if (this.windowId != destWindowId){
             // Remove the box from the level manager and add it to the new window
@@ -131,12 +161,36 @@ export class Box extends LevelElement {
     }
 
     public moveBoxToPosition(destX: number, destY: number, destWindowId: WindowID): void {
+        // --- Target check: before move ---
+        let prevTarget: any = null;
+        if (Box.getBoxTargetAt) {
+            prevTarget = Box.getBoxTargetAt(this.tileX, this.tileY, this.windowId);
+        }
+        const wasOnTarget = prevTarget && prevTarget.boxType === this.boxType;
+
+        // --- Target check: after move ---
+        let newTarget: any = null;
+        if (Box.getBoxTargetAt) {
+            newTarget = Box.getBoxTargetAt(destX, destY, destWindowId);
+        }
+        const isOnTarget = newTarget && newTarget.boxType === this.boxType;
+
         gameBridge.emit(Events.BOX_POSITION_UPDATE, {
             x: destX,
             y: destY,
             boxId: this.boxId,
             windowId: destWindowId
         });
+
+        // --- Update TargetManager ---
+        if (targetManager) {
+            if (!wasOnTarget && isOnTarget) {
+                targetManager.incrementTargets();
+            } else if (wasOnTarget && !isOnTarget) {
+                targetManager.decrementTargets();
+            }
+        }
+
         if (this.windowId != destWindowId){
             // Remove the box from the level manager and add it to the new window
             this.despawn(this.scene!);

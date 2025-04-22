@@ -27,10 +27,12 @@ export class TargetManager {
     }
 
     incrementTargets(amount: number = 1): void {
+        console.log(`Incrementing targets by ${amount}. Current: ${this.currentTargets}`);
         this.currentTargets += amount;
     }
 
     decrementTargets(amount: number = 1): void {
+        console.log(`Decrementing targets by ${amount}. Current: ${this.currentTargets}`);
         this.currentTargets -= amount;
     }
 
@@ -50,3 +52,5 @@ export class TargetManager {
         this.setCurrentTargets(0);
     }
 }
+
+export const targetManager = new TargetManager(0);

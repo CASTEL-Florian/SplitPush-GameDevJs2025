@@ -150,6 +150,7 @@ export default class MainScene extends Phaser.Scene {
         this.lastLevelIndex = 0;
         levelManager.spawn(this.lastLevelIndex, this, this.windowId);
         this.setupBridgeListeners(this);
+        Box.setGetBoxTargetAt((x, y, windowId) => this.getBoxTargetAt(x, y, windowId));
     }
 
     private setupBridgeListeners(scene: Phaser.Scene): void {
