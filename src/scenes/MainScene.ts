@@ -60,6 +60,7 @@ export default class MainScene extends Phaser.Scene {
     private isLastBeatOdd: boolean = false;
     private lastBeat: number = 0;
     private onBeatCallback?: () => void;
+    public isWindowMoving: boolean = false;
 
     constructor() {
         super({ key: 'MainScene' });
@@ -143,28 +144,60 @@ export default class MainScene extends Phaser.Scene {
         this.physics.world.setBounds(0, 0, this.cameras.main.width, this.cameras.main.height);
         this.player = new Player(this, this.windowId);
 
+        // --- Smooth window movement state ---
+        // Store animation frame id and state per window
+        const windowAnimKey = this.windowId === 'left' ? '_windowMoveAnimLeft' : '_windowMoveAnimRight';
+        (window as any)[windowAnimKey] = (window as any)[windowAnimKey] || { frame: null, cancel: false };
+
+        // Helper to animate window movement
+        const animateWindowMove = (container: HTMLElement, fromY: number, toY: number, duration: number = 400) => {
+            const animState = (window as any)[windowAnimKey];
+            animState.cancel = true; // cancel any previous animation
+            if (animState.frame) cancelAnimationFrame(animState.frame);
+            animState.cancel = false;
+            this.isWindowMoving = true;
+            const start = performance.now();
+            const ease = (t: number) => this.scaleEaseFunction(t);
+            const step = (now: number) => {
+                if (animState.cancel) {
+                    this.isWindowMoving = false;
+                    return;
+                }
+                const elapsed = now - start;
+                const t = Math.min(1, elapsed / duration);
+                const eased = ease(t);
+                const y = fromY + (toY - fromY) * eased;
+                container.style.transform = `translateY(${y}px)`;
+                if (t < 1) {
+                    animState.frame = requestAnimationFrame(step);
+                } else {
+                    animState.frame = null;
+                    this.isWindowMoving = false;
+                }
+            };
+            animState.frame = requestAnimationFrame(step);
+        };
+
         // Set up the callback to update the window position when weights change
         if (this.windowId === 'left'){
             weightManager.onWeightChangeLeft = (wm) => {
-                // Move the actual HTML container (not the camera)
                 const containerId = this.windowId === 'left' ? 'game-container-left' : 'game-container-right';
                 const container = document.getElementById(containerId);
                 if (container) {
-                    // Calculate the new Y position
+                    const prevY = parseFloat(container.style.transform.replace(/[^-\d.]/g, '')) || wm.getInitialY();
                     const y = wm.getInitialY() + (this.windowId === 'left' ? 1 : -1) * wm.getDeltaPixels();
-                    container.style.transform = `translateY(${y}px)`;
+                    animateWindowMove(container, prevY, y);
                 }
             };
         }
         if (this.windowId === 'right'){
             weightManager.onWeightChangeRight = (wm) => {
-                // Move the actual HTML container (not the camera)
                 const containerId = this.windowId === 'left' ? 'game-container-left' : 'game-container-right';
                 const container = document.getElementById(containerId);
                 if (container) {
-                    // Calculate the new Y position
+                    const prevY = parseFloat(container.style.transform.replace(/[^-\d.]/g, '')) || wm.getInitialY();
                     const y = wm.getInitialY() + (this.windowId === 'left' ? 1 : -1) * wm.getDeltaPixels();
-                    container.style.transform = `translateY(${y}px)`;
+                    animateWindowMove(container, prevY, y);
                 }
             };
         }
@@ -187,8 +220,7 @@ export default class MainScene extends Phaser.Scene {
     }
 
     private scaleEaseFunction(t: number): number {
-        const wn = 4.6;
-        return (1 - Math.exp(-wn * t) * (1 + wn * t)) / (1 - Math.exp(-t) * (1 + t))
+        return t * t * (3 - 2 * t);
     }
 
     private setupBridgeListeners(scene: Phaser.Scene): void {

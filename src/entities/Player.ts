@@ -115,11 +115,17 @@ export class Player {
             let nextY = ty + dy;
             const currentTilemapDataWidth = this.mainScene.currentTilemapDataWidth();
             if (currentWindowId === 'left' && currentTilemapDataWidth && nextX >= currentTilemapDataWidth) {
+                if (this.mainScene.isWindowMoving){
+                    return;
+                }
                 nextX = 0;
                 nextY += weightManager.leftWeight - weightManager.rightWeight;
                 currentWindowId = 'right';
             }
             else if (currentWindowId === 'right' && currentTilemapDataWidth && nextX < 0) {
+                if (this.mainScene.isWindowMoving){
+                    return;
+                }
                 nextX = currentTilemapDataWidth - 1;
                 nextY += weightManager.rightWeight - weightManager.leftWeight;
                 currentWindowId = 'left';
@@ -134,11 +140,17 @@ export class Player {
                 let currentBoxWindowId = currentWindowId;
                 while (true) {
                     if (currentBoxWindowId === 'left' && currentTilemapDataWidth && checkX >= currentTilemapDataWidth) {
+                        if (this.mainScene.isWindowMoving){
+                            return;
+                        }
                         checkX = 0;
                         checkY += weightManager.leftWeight - weightManager.rightWeight;
                         currentBoxWindowId = 'right';
                     }
                     else if (currentBoxWindowId === 'right' && currentTilemapDataWidth && checkX < 0) {
+                        if (this.mainScene.isWindowMoving){
+                            return;
+                        }
                         checkX = currentTilemapDataWidth - 1;
                         checkY += weightManager.rightWeight - weightManager.leftWeight;
                         currentBoxWindowId = 'left';
