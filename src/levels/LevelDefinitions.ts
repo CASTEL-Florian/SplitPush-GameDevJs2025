@@ -2,6 +2,7 @@ import { LevelDef } from "./LevelManager";
 import { Box } from "../entities/Box";
 import { BoxTarget } from "../entities/BoxTarget";
 import { PlayerTarget } from "../entities/PlayerTarget";
+import { TextElement } from "../entities/TextElement";
 
 // Create a level with one orb in each window
 export const leftLevel1: LevelDef = {
@@ -19,6 +20,7 @@ export const rightLevel1: LevelDef = {
         new Box(3, 7, 0.5, 'right'),
         new Box(3, 10, 0.5, 'right'),
         new BoxTarget(3, 5, 'default'),
+        new TextElement('Hello from the right!', 120, 6, 16, '#00ff00', true),
     ],
     tilemapPath: 'assets/level2.json'
 };
