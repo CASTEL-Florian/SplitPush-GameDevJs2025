@@ -1,6 +1,7 @@
 import { LevelDef } from "./LevelManager";
 import { Box } from "../entities/Box";
 import { BoxTarget } from "../entities/BoxTarget";
+import { PlayerTarget } from "../entities/PlayerTarget";
 
 // Create a level with one orb in each window
 export const leftLevel1: LevelDef = {
@@ -8,6 +9,7 @@ export const leftLevel1: LevelDef = {
         new Box(5, 6, 0.5, 'left'), // tileX, tileY, weight
         new Box(5, 4, 0.5, 'left'),
         new BoxTarget(5, 7, 'default'),
+        new PlayerTarget(5, 5),
     ],
     tilemapPath: 'assets/level1.json'
 };
@@ -16,7 +18,7 @@ export const rightLevel1: LevelDef = {
     elements: [
         new Box(3, 7, 0.5, 'right'),
         new Box(3, 10, 0.5, 'right'),
-        new BoxTarget(3, 8, 'default'),
+        new BoxTarget(3, 5, 'default'),
     ],
     tilemapPath: 'assets/level2.json'
 };

@@ -2,23 +2,20 @@ import { WindowID } from "../GameBridge";
 import { LevelElement } from "../levels/LevelElement";
 import { getTileSize } from "../levels/LevelManager";
 
-// BoxTarget is a target location for a box of a specific type.
-export class BoxTarget extends LevelElement {
+export class PlayerTarget extends LevelElement {
     tileX: number;
     tileY: number;
-    boxType: string;
     tileSize: number;
     sprite: Phaser.GameObjects.Sprite | null = null;
     spawned: boolean = false;
     scene: Phaser.Scene | null = null;
     spriteKey: string;
 
-    constructor(tileX: number, tileY: number, boxType: string,  spriteKey: string = "box_target") {
+    constructor(tileX: number, tileY: number,  spriteKey: string = "player_target") {
         super();
         this.tileX = tileX;
         this.tileY = tileY;
         this.tileSize = 0;
-        this.boxType = boxType;
         this.spriteKey = spriteKey;
     }
 

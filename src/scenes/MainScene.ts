@@ -28,6 +28,14 @@ export default class MainScene extends Phaser.Scene {
         return level.elements.filter(e => e.constructor.name === 'BoxTarget') as import("../entities/BoxTarget").BoxTarget[];
     }
 
+    public getAllPlayerTargets(windowId: WindowID): import("../entities/PlayerTarget.ts").PlayerTarget[] {
+        const levelArr = windowId === 'left' ? levelManager.leftLevels : levelManager.rightLevels;
+        const level = levelArr[this.lastLevelIndex];
+        if (!level) return [];
+        // Only return elements that are PlayerTarget
+        return level.elements.filter(e => e.constructor.name === 'PlayerTarget') as import("../entities/PlayerTarget.ts").PlayerTarget[];
+    }
+
     /**
      * Returns the Box at the given tile, or undefined if none exists.
      */
@@ -38,6 +46,11 @@ export default class MainScene extends Phaser.Scene {
     public getBoxTargetAt(tileX: number, tileY: number, windowId: WindowID): import("../entities/BoxTarget").BoxTarget | undefined {
         return this.getAllTargets(windowId).find(target => target.tileX === tileX && target.tileY === tileY);
     }
+
+    public getPlayerTargetAt(tileX: number, tileY: number, windowId: WindowID): import("../entities/PlayerTarget.ts").PlayerTarget | undefined {
+        return this.getAllPlayerTargets(windowId).find(target => target.tileX === tileX && target.tileY === tileY);
+    }
+
     
     private windowId!: WindowID; // 'left' or 'right' - set during init
     private player!: Player;
@@ -75,6 +88,7 @@ export default class MainScene extends Phaser.Scene {
         this.load.image('tiles', 'assets/tiles.png');
         this.load.image('box', 'assets/box.png');
         this.load.image('box_target', 'assets/box_target.png');
+        this.load.image('player_target', 'assets/player_target.png');
         if (this.windowId === 'left') {
             this.load.audio('mainMusic', 'assets/Pixel-Balloons_v2.mp3');
         }
@@ -170,6 +184,11 @@ export default class MainScene extends Phaser.Scene {
         levelManager.spawn(this.lastLevelIndex, this, this.windowId);
         this.setupBridgeListeners(this);
         Box.setGetBoxTargetAt((x, y, windowId) => this.getBoxTargetAt(x, y, windowId));
+    }
+
+    private scaleEaseFunction(t: number): number {
+        const wn = 4.6;
+        return (1 - Math.exp(-wn * t) * (1 + wn * t)) / (1 - Math.exp(-t) * (1 + t))
     }
 
     private setupBridgeListeners(scene: Phaser.Scene): void {

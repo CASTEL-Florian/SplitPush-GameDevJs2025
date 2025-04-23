@@ -54,6 +54,7 @@ export const Events = {
     // Game state events
     GAME_OVER: 'game-over',
     RESTART_GAME: 'restart-game',
+    GAME_WON: 'game-won',
 
     // Player events
     PLAYER_POSITION_UPDATE: 'player-position-update', // <-- Add this event

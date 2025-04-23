@@ -181,6 +181,16 @@ export class Player {
                 y: nextY,
                 windowId: currentWindowId
             });
+
+            if (this.mainScene.getPlayerTargetAt(nextX, nextY, currentWindowId)) {
+                // Check if all the box targets are filled
+                const allTargetsFilled = targetManager.getCurrentTargets() === targetManager.getTotalTargets();
+                if (allTargetsFilled) {
+                    // Emit event to notify the game is won
+                    gameBridge.emit(Events.GAME_WON, { windowId: currentWindowId });
+                    console.log(`[${currentWindowId}] Game won!`);
+                }
+            }
         }
     }
     private _moveLock: boolean = false;

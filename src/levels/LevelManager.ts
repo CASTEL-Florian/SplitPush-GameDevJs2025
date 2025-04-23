@@ -2,6 +2,7 @@ import { Level, TilemapData } from './Level';
 import { WindowID } from '../GameBridge';
 import { WINDOW_WIDTH} from '../game';
 import { leftLevels, rightLevels } from '../levels/LevelDefinitions';
+import { targetManager } from '../entities/TargetManager';
 
 const TILEMAP_WIDTH = 6;
 
@@ -47,6 +48,7 @@ export class LevelManager {
             }
             this.rightLevels[index]?.spawn(scene, windowId, TILEMAP_WIDTH);
         }
+        targetManager.loadLevel(index);
     }
 
     /**

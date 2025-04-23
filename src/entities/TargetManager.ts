@@ -50,6 +50,7 @@ export class TargetManager {
         }
         this.setTotalTargets(totalTargets);
         this.setCurrentTargets(0);
+        console.log(`Loaded level ${index}. Total targets: ${totalTargets}`);
     }
 }
 
