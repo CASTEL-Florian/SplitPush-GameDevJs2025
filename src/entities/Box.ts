@@ -20,6 +20,13 @@ export class Box extends LevelElement {
     private windowId: WindowID;
     private scene: Phaser.Scene | null = null;
     private static getBoxTargetAt: ((x: number, y: number, windowId: WindowID) => any) | null = null;
+    private isOnTarget: boolean = false;
+    private animScale: number = 1;
+    private animTween?: Phaser.Tweens.Tween;
+    private lastBeatTime: number = 0;
+    private originalScaleX: number = 1;
+    private originalScaleY: number = 1;
+    private currentlySpawned: boolean = false;
 
     static setGetBoxTargetAt(fn: (x: number, y: number, windowId: WindowID) => any) {
         Box.getBoxTargetAt = fn;
@@ -46,11 +53,19 @@ export class Box extends LevelElement {
         this.sprite = scene.add.sprite(x, y, this.spriteKey).setDisplaySize(this.tileSize, this.tileSize);
         this.sprite.setOrigin(0.5, 0.5);
         this.sprite.setData('box', this);
+        // Store the scale that setDisplaySize produced as the "original" scale
+        this.originalScaleX = this.sprite.scaleX;
+        this.originalScaleY = this.sprite.scaleY;
         if (!this.spawned) {
             this.setupBridgeListeners(scene);
         }
         this.spawned = true;
         this.scene = scene;
+        // Ensure scale is reset to original
+        if (this.sprite) {
+            this.sprite.setScale(this.originalScaleX, this.originalScaleY);
+        }
+        this.currentlySpawned = true;
     }
 
     despawn(scene: Phaser.Scene): void {
@@ -58,6 +73,7 @@ export class Box extends LevelElement {
             this.sprite.destroy();
             this.sprite = null;
         }
+        this.currentlySpawned = false;
     }
 
     private setupBridgeListeners(scene: Phaser.Scene): void {
@@ -73,10 +89,50 @@ export class Box extends LevelElement {
                 );
             }
         };
+
+        const handleMusicBeat = () => {
+            if (!this.currentlySpawned) return;
+            this.onBeatPulse();
+        }
+        
         gameBridge.on(Events.BOX_POSITION_UPDATE, handleBoxUpdate);
+        gameBridge.on(Events.MUSIC_BEAT, handleMusicBeat);
+
         scene.events.on(Phaser.Scenes.Events.SHUTDOWN, () => {
             console.log(`[${this.windowId}] Shutting down scene, removing bridge listener.`);
             gameBridge.off(Events.BOX_POSITION_UPDATE, handleBoxUpdate);
+            gameBridge.off(Events.MUSIC_BEAT, handleMusicBeat);
+        });
+    }
+
+    private updateTargetAnimation(isOnTarget: boolean) {
+        if (!this.sprite) return;
+        if (isOnTarget && !this.isOnTarget) {
+            // Just landed on target, start anim
+            this.sprite.setScale(this.originalScaleX * 1.1, this.originalScaleY * 1.1);
+        }
+        if (!isOnTarget && this.isOnTarget) {
+            // Just left target, reset anim
+            if (this.animTween) {
+                this.animTween.stop();
+                this.animTween = undefined;
+            }
+            this.sprite.setScale(this.originalScaleX, this.originalScaleY);
+        }
+        this.isOnTarget = isOnTarget;
+    }
+
+    /** Called by MainScene on every beat to pulse the box if it's on a target */
+    public onBeatPulse() {
+        if (!this.sprite || !this.isOnTarget) return;
+        // Animate scale up then back down
+        if (this.animTween) this.animTween.stop();
+        this.animTween = this.scene!.tweens.add({
+            targets: this.sprite,
+            scaleX: { from: this.originalScaleX * 1.2, to: this.originalScaleX },
+            scaleY: { from: this.originalScaleY * 1.2, to: this.originalScaleY },
+            duration: 300,
+            ease: 'Quad.easeOut'
         });
     }
 
@@ -108,6 +164,10 @@ export class Box extends LevelElement {
             newTarget = Box.getBoxTargetAt(destX, destY, destWindowId);
         }
         const isOnTarget = newTarget && newTarget.boxType === this.boxType;
+
+        console.log('Is on target:', isOnTarget);
+        // Animate if needed
+        this.updateTargetAnimation(isOnTarget);
 
         gameBridge.emit(Events.BOX_POSITION_UPDATE, {
             x: destX,
@@ -173,6 +233,9 @@ export class Box extends LevelElement {
             newTarget = Box.getBoxTargetAt(destX, destY, destWindowId);
         }
         const isOnTarget = newTarget && newTarget.boxType === this.boxType;
+
+        // Animate if needed
+        this.updateTargetAnimation(isOnTarget);
 
         gameBridge.emit(Events.BOX_POSITION_UPDATE, {
             x: destX,

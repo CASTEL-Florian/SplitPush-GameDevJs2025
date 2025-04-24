@@ -9,6 +9,8 @@ import { BoxPositionData } from '../GameBridge';
 import { gameBridge } from '../GameBridge';
 import { GridTransitionPipeline } from '../GridTransitionPipeline';
 import { WINDOW_HEIGHT, WINDOW_WIDTH } from '../game';
+import { MusicManager } from '../MusicManager';
+import { undoManager } from '../undo/UndoManager';
 
 export default class MainScene extends Phaser.Scene {
     /**
@@ -57,11 +59,7 @@ export default class MainScene extends Phaser.Scene {
     private windowId!: WindowID; // 'left' or 'right' - set during init
     private player!: Player;
     private lastLevelIndex: number = 0;
-    private mainMusic?: Phaser.Sound.BaseSound; // Reference to looping music
-    private beatInterval: number = 1 / (117.91 / 60);
-    private isLastBeatOdd: boolean = false;
-    private lastBeat: number = 0;
-    private onBeatCallback?: () => void;
+    private musicManager?: MusicManager;
     public isWindowMoving: boolean = false;
     private gridTransitionSprite?: Phaser.GameObjects.Sprite;
 
@@ -94,7 +92,8 @@ export default class MainScene extends Phaser.Scene {
         this.load.image('box_target', 'assets/box_target.png');
         this.load.image('player_target', 'assets/player_target.png');
         if (this.windowId === 'left') {
-            this.load.audio('mainMusic', 'assets/Brain-Teaser-3.mp3');
+            this.musicManager = new MusicManager(this, 'mainMusic', 117.91);
+            this.musicManager.preload();
         }
     }
 
@@ -123,17 +122,10 @@ export default class MainScene extends Phaser.Scene {
         this.setupGame();
 
         // Play looping music if windowId is 'left'
-        if (this.windowId === 'left') {
-            if (!this.mainMusic) {
-                this.mainMusic = this.sound.add('mainMusic', { loop: true, volume: 0.5 });
-                this.mainMusic.play();
-            } else if (!this.mainMusic.isPlaying) {
-                this.mainMusic.play();
-            }
-            this.lastBeat = 0;
-            this.onBeatCallback = () => {
-                console.log('Beat!');
-            };
+        if (this.windowId === 'left' && this.musicManager) {
+            this.musicManager.create(() => {
+                gameBridge.emit(Events.MUSIC_BEAT, null);
+            });
         }
 
         // Optional: Add background color for visual distinction
@@ -146,18 +138,8 @@ export default class MainScene extends Phaser.Scene {
         if (this.player) {
             this.player.update(delta);
         }
-        // Beat tracking
-        if (this.windowId === 'left' && this.mainMusic && this.mainMusic.isPlaying) {
-            const currentTime = (this.mainMusic as Phaser.Sound.HTML5AudioSound).seek;
-            if (currentTime - this.lastBeat >= this.beatInterval) {
-                this.lastBeat += this.beatInterval;
-                this.isLastBeatOdd = !this.isLastBeatOdd;
-                if (this.onBeatCallback && this.isLastBeatOdd) this.onBeatCallback();
-            }
-            // Handle music restart or stop
-            if (currentTime < this.lastBeat) {
-                this.lastBeat = 0;
-            }
+        if (this.windowId === 'left' && this.musicManager) {
+            this.musicManager.update();
         }
     }
 
@@ -355,6 +337,6 @@ export default class MainScene extends Phaser.Scene {
         levelManager.despawn(this.lastLevelIndex, this, this.windowId);
         this.lastLevelIndex++;
         levelManager.spawn(this.lastLevelIndex, this, this.windowId);
-        // Optionally respawn player or reset state here if needed
+        undoManager.clear();
     }
 }
