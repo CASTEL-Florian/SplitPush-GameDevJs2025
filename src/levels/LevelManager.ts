@@ -1,8 +1,9 @@
 import { Level, TilemapData } from './Level';
 import { WindowID } from '../GameBridge';
 import { WINDOW_WIDTH} from '../game';
-import { leftLevels, rightLevels } from '../levels/LevelDefinitions';
+import { leftLevels, rightLevels, playerStartPositions } from '../levels/LevelDefinitions';
 import { targetManager } from '../entities/TargetManager';
+import { gameBridge, Events } from '../GameBridge';
 
 const TILEMAP_WIDTH = 6;
 
@@ -39,6 +40,10 @@ export class LevelManager {
                 this.leftLevels[index] = new Level(def.elements, tilemapData);
             }
             this.leftLevels[index]?.spawn(scene, windowId, TILEMAP_WIDTH);
+
+
+            // Only move player once.
+            gameBridge.emit(Events.PLAYER_POSITION_UPDATE, playerStartPositions[index]);
         }
         if (windowId === 'right') {
             if (!this.rightLevels[index]) {

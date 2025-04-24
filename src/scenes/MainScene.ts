@@ -58,7 +58,7 @@ export default class MainScene extends Phaser.Scene {
     private player!: Player;
     private lastLevelIndex: number = 0;
     private mainMusic?: Phaser.Sound.BaseSound; // Reference to looping music
-    private beatInterval: number = 1 / (95 / 60);
+    private beatInterval: number = 1 / (117.91 / 60);
     private isLastBeatOdd: boolean = false;
     private lastBeat: number = 0;
     private onBeatCallback?: () => void;
@@ -94,7 +94,7 @@ export default class MainScene extends Phaser.Scene {
         this.load.image('box_target', 'assets/box_target.png');
         this.load.image('player_target', 'assets/player_target.png');
         if (this.windowId === 'left') {
-            this.load.audio('mainMusic', 'assets/Pixel-Balloons_v2.mp3');
+            this.load.audio('mainMusic', 'assets/Brain-Teaser-3.mp3');
         }
     }
 
@@ -132,7 +132,7 @@ export default class MainScene extends Phaser.Scene {
             }
             this.lastBeat = 0;
             this.onBeatCallback = () => {
-                //console.log('Beat!');
+                console.log('Beat!');
             };
         }
 
@@ -307,7 +307,7 @@ export default class MainScene extends Phaser.Scene {
         const pipeline = this.gridTransitionSprite.pipeline as GridTransitionPipeline;
         if (!pipeline) return;
 
-        const duration = 600; // ms for each transition
+        const duration = 1000; // ms for each transition
         let startTime: number | null = null;
 
         const gridTransitionSprite = this.gridTransitionSprite;
