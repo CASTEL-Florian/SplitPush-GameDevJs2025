@@ -8,6 +8,7 @@ import { Box } from '../entities/Box';
 import { BoxPositionData } from '../GameBridge';
 import { gameBridge } from '../GameBridge';
 import { GridTransitionPipeline } from '../GridTransitionPipeline';
+import { WINDOW_HEIGHT, WINDOW_WIDTH } from '../game';
 
 export default class MainScene extends Phaser.Scene {
     /**
@@ -116,9 +117,7 @@ export default class MainScene extends Phaser.Scene {
             .setOrigin(0, 0)
             .setDisplaySize(width, height)
             .setDepth(1000); // ensure it's above everything
-        this.gridTransitionSprite.setPipeline('GridTransitionPipeline');
-
-        // --- End Vignette Effect ---
+        this.gridTransitionSprite.setPipeline('GridTransitionPipeline'); 
 
         // Setup game elements (player and physics bounds)
         this.setupGame();
@@ -160,8 +159,6 @@ export default class MainScene extends Phaser.Scene {
                 this.lastBeat = 0;
             }
         }
-        // Transition effect
-        //(this.gridTransitionSprite?.pipeline as GridTransitionPipeline).progress = progress;
     }
 
     // --- Setup Methods ---
@@ -250,22 +247,29 @@ export default class MainScene extends Phaser.Scene {
     }
 
     private setupBridgeListeners(scene: Phaser.Scene): void {
-            const handleBoxUpdate = (data: BoxPositionData) => {
-                if (data.windowId != this.windowId) {
-                    console.log(`[${this.windowId}] Box respawned in other window, ignoring.`);
-                    return;
-                }
-                console.log(`[${this.windowId}] Box respawned at ${data.x}, ${data.y}`);
-                const box = this.getAllBoxes(this.windowId).find(b => b.boxId === data.boxId);
-                box?.spawn(scene, this.windowId);
+        const handleBoxUpdate = (data: BoxPositionData) => {
+            if (data.windowId != this.windowId) {
+                console.log(`[${this.windowId}] Box respawned in other window, ignoring.`);
+                return;
+            }
+            console.log(`[${this.windowId}] Box respawned at ${data.x}, ${data.y}`);
+            const box = this.getAllBoxes(this.windowId).find(b => b.boxId === data.boxId);
+            box?.spawn(scene, this.windowId);
 
-            };
-            gameBridge.on(Events.BOX_RESPAWN, handleBoxUpdate);
-            scene.events.on(Phaser.Scenes.Events.SHUTDOWN, () => {
-                console.log(`[${this.windowId}] Shutting down scene, removing bridge listener.`);
-                gameBridge.off(Events.BOX_RESPAWN, handleBoxUpdate);
-            });
-        }
+        };
+        gameBridge.on(Events.BOX_RESPAWN, handleBoxUpdate);
+
+        const handleWin = (data: any) => {
+            this.transitionToNextLevel();
+            console.log(`[${this.windowId}] Transitioning to next level.`);
+        };
+        gameBridge.on(Events.GAME_WON, handleWin);
+
+        scene.events.on(Phaser.Scenes.Events.SHUTDOWN, () => {
+            console.log(`[${this.windowId}] Shutting down scene, removing bridge listener.`);
+            gameBridge.off(Events.BOX_RESPAWN, handleBoxUpdate);
+        });
+    }
 
     public isTileEmptyOrInvalid(tileX: number, tileY: number, windowId: WindowID): boolean {
         if (!levelManager) return true;
@@ -292,5 +296,65 @@ export default class MainScene extends Phaser.Scene {
         const level = levelArr[this.lastLevelIndex];
         if (!level || !level.tileset || !level.tilemapData) return undefined;
         return level.tilemapData.mapWidthInTiles;
+    }
+
+    /**
+     * Transitions to the next level using the gridTransitionSprite.
+     * Animates progress from 0 to 1, loads the next level, then animates from 1 to 0.
+     */
+    public transitionToNextLevel(): void {
+        if (!this.gridTransitionSprite) return;
+        const pipeline = this.gridTransitionSprite.pipeline as GridTransitionPipeline;
+        if (!pipeline) return;
+
+        const duration = 600; // ms for each transition
+        let startTime: number | null = null;
+
+        const gridTransitionSprite = this.gridTransitionSprite;
+
+        // Animate progress from 0 to 1
+        const animateForward = (now: number) => {
+            gridTransitionSprite.setRotation(0);
+            gridTransitionSprite.setPosition(0, 0);
+            if (startTime === null) startTime = now;
+            const elapsed = now - startTime;
+            const t = Math.min(1, elapsed / duration);
+            pipeline.progress = t;
+            if (t < 1) {
+                requestAnimationFrame(animateForward);
+            } else {
+                // After forward transition, load next level and play reverse
+                this.loadNextLevel();
+                startTime = null;
+                requestAnimationFrame(animateReverse);
+            }
+        };
+
+        // Animate progress from 1 to 0
+        const animateReverse = (now: number) => {
+            gridTransitionSprite.setRotation(Math.PI);
+            gridTransitionSprite.setPosition(WINDOW_WIDTH, WINDOW_HEIGHT);
+            if (startTime === null) startTime = now;
+            const elapsed = now - startTime;
+            const t = Math.min(1, elapsed / duration);
+            pipeline.progress = 1 - t;
+            if (t < 1) {
+                requestAnimationFrame(animateReverse);
+            } else {
+                pipeline.progress = 0;
+            }
+        };
+
+        requestAnimationFrame(animateForward);
+    }
+
+    /**
+     * Loads the next level and respawns entities.
+     */
+    private loadNextLevel(): void {
+        levelManager.despawn(this.lastLevelIndex, this, this.windowId);
+        this.lastLevelIndex++;
+        levelManager.spawn(this.lastLevelIndex, this, this.windowId);
+        // Optionally respawn player or reset state here if needed
     }
 }

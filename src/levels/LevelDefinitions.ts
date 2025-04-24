@@ -4,7 +4,6 @@ import { BoxTarget } from "../entities/BoxTarget";
 import { PlayerTarget } from "../entities/PlayerTarget";
 import { TextElement } from "../entities/TextElement";
 
-// Create a level with one orb in each window
 export const leftLevel1: LevelDef = {
     elements: [
         new Box(5, 6, 0.5, 'left'), // tileX, tileY, weight
@@ -25,6 +24,25 @@ export const rightLevel1: LevelDef = {
     tilemapPath: 'assets/level2.json'
 };
 
-// You can export more levels here as needed
-export const leftLevels: LevelDef[] = [leftLevel1];
-export const rightLevels: LevelDef[] = [rightLevel1];
+export const leftLevel2: LevelDef = {
+    elements: [
+        new Box(0, 0, 0.5, 'left'), // tileX, tileY, weight
+        new Box(1, 0, 0.5, 'left'),
+        new BoxTarget(5, 7, 'default'),
+        new PlayerTarget(5, 5),
+    ],
+    tilemapPath: 'assets/level1.json'
+};
+
+export const rightLevel2: LevelDef = {
+    elements: [
+        new Box(0, 0, 0.5, 'right'),
+        new Box(1, 0, 0.5, 'right'),
+        new BoxTarget(3, 5, 'default'),
+        new TextElement('Hello from the right!', 120, 6, 16, '#00ff00', true),
+    ],
+    tilemapPath: 'assets/level2.json'
+};
+
+export const leftLevels: LevelDef[] = [leftLevel1, leftLevel2];
+export const rightLevels: LevelDef[] = [rightLevel1, rightLevel2];

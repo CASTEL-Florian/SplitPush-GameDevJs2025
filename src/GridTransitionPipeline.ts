@@ -91,20 +91,17 @@ export class GridTransitionPipeline extends Phaser.Renderer.WebGL.Pipelines.Mult
     }
 
     // Called automatically before the pipeline renders.
-    // This is where we pass our JavaScript variables (properties) to the shader uniforms.
     onPreRender() {
         // Set the 'uProgress' uniform in the fragment shader
-        this.set1f('uProgress', this.game.loop.time / 2000 -5); // Convert to seconds
+        this.set1f('uProgress', this.progress);
         // Set the 'uGridSize' uniform in the fragment shader
         this.set2f('uGridSize', this.gridSize.x, this.gridSize.y);
     }
 
-    // Optional: A helper method to easily set the progress
     setProgress(value: number) {
-        this.progress = Phaser.Math.Clamp(value, 0, 1);
+        this.progress = Phaser.Math.Clamp(value, 0, 2);
     }
 
-    // Optional: A helper method to easily set the grid size
     setGridSize(width: number, height: number) {
         this.gridSize.set(width, height);
     }
