@@ -7,6 +7,7 @@ import { weightManager } from '../WeightManager';
 import { Box } from '../entities/Box';
 import { BoxPositionData } from '../GameBridge';
 import { gameBridge } from '../GameBridge';
+import { GridTransitionPipeline } from '../GridTransitionPipeline';
 
 export default class MainScene extends Phaser.Scene {
     /**
@@ -61,6 +62,7 @@ export default class MainScene extends Phaser.Scene {
     private lastBeat: number = 0;
     private onBeatCallback?: () => void;
     public isWindowMoving: boolean = false;
+    private gridTransitionSprite?: Phaser.GameObjects.Sprite;
 
     constructor() {
         super({ key: 'MainScene' });
@@ -96,6 +98,28 @@ export default class MainScene extends Phaser.Scene {
     }
 
     create(): void {
+        // Register the pipeline if not already present
+        if (this.game.renderer instanceof Phaser.Renderer.WebGL.WebGLRenderer && !this.game.renderer.pipelines.has('GridTransitionPipeline')) {
+            this.game.renderer.pipelines.add('GridTransitionPipeline', new GridTransitionPipeline(this.game));
+        }
+        // Add a fullscreen sprite (using a 1x1 white texture scaled up)
+        const width = this.cameras.main.width;
+        const height = this.cameras.main.height;
+        // Create a 1x1 white texture if not already loaded
+        if (!this.textures.exists('white1x1')) {
+            const rt = this.textures.createCanvas('white1x1', 1, 1);
+            rt!.context.fillStyle = '#000000';
+            rt!.context.fillRect(0, 0, 1, 1);
+            rt!.refresh();
+        }
+        this.gridTransitionSprite = this.add.sprite(0, 0, 'white1x1')
+            .setOrigin(0, 0)
+            .setDisplaySize(width, height)
+            .setDepth(1000); // ensure it's above everything
+        this.gridTransitionSprite.setPipeline('GridTransitionPipeline');
+
+        // --- End Vignette Effect ---
+
         // Setup game elements (player and physics bounds)
         this.setupGame();
 
@@ -136,6 +160,8 @@ export default class MainScene extends Phaser.Scene {
                 this.lastBeat = 0;
             }
         }
+        // Transition effect
+        //(this.gridTransitionSprite?.pipeline as GridTransitionPipeline).progress = progress;
     }
 
     // --- Setup Methods ---
