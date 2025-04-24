@@ -49,7 +49,6 @@ export const rightLevel2: LevelDef = {
 };
 
 // Level 3
-
 export const leftLevel3: LevelDef = {
     elements: [
         new BoxTarget(3, 6, 'default'),
@@ -71,13 +70,34 @@ export const rightLevel3: LevelDef = {
     tilemapPath: 'assets/level3_right.json'
 };
 
+// Level 3
+export const leftLevel4: LevelDef = {
+    elements: [
+        new BoxTarget(3, 4, 'default'),
+        new Box(5, 6, 0.5, 'left'),
+        new Box(5, 3, 0.5, 'left'),
 
-export const leftLevels: LevelDef[] = [leftLevel1, leftLevel2, leftLevel3];
-export const rightLevels: LevelDef[] = [rightLevel1, rightLevel2, rightLevel3];
+    ],
+    tilemapPath: 'assets/level4_left.json'
+};
+
+export const rightLevel4: LevelDef = {
+    elements: [
+        new BoxTarget(3, 4, 'default'),
+        new PlayerTarget(4, 4),
+    ],
+    tilemapPath: 'assets/level4_right.json'
+};
+
+//export const leftLevels: LevelDef[] = [leftLevel1, leftLevel2, leftLevel3, leftLevel4];
+//export const rightLevels: LevelDef[] = [rightLevel1, rightLevel2, rightLevel3, rightLevel4];
+
+export const leftLevels: LevelDef[] = [leftLevel3, leftLevel4];
+export const rightLevels: LevelDef[] = [rightLevel3, rightLevel4];
 
 export const playerStartPositions: PlayerPositionData[] = [
-    { windowId: 'left', x: 2, y: 6 },
-    { windowId: 'right', x: 4, y: 6 },
+    //{ windowId: 'left', x: 2, y: 6 },
+    //{ windowId: 'right', x: 4, y: 6 },
     { windowId: 'left', x: 2, y: 3 },
-    
+    { windowId: 'left', x: 2, y: 4 },
 ];
