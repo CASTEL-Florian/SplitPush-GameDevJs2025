@@ -11,6 +11,8 @@ export class MusicManager {
     private isLastBeatOdd: boolean = false;
     private lastBeat: number = 0;
     private onBeatCallback?: BeatCallback;
+    private transitionSound?: Phaser.Sound.BaseSound;
+    private transitionSound2?: Phaser.Sound.BaseSound;
 
     constructor(scene: Phaser.Scene, musicKey: string, bpm: number = 117.91) {
         this.scene = scene;
@@ -20,6 +22,8 @@ export class MusicManager {
 
     preload() {
         this.scene.load.audio(this.musicKey, `assets/Brain-Teaser-3.mp3`);
+        this.scene.load.audio('transition', 'assets/tactactac.mp3');
+        this.scene.load.audio('transition2', 'assets/tactactacReversed.mp3');
     }
 
     create(onBeatCallback?: BeatCallback) {
@@ -29,6 +33,12 @@ export class MusicManager {
             this.mainMusic.play();
         } else if (!this.mainMusic.isPlaying) {
             this.mainMusic.play();
+        }
+        if (!this.transitionSound) {
+            this.transitionSound = this.scene.sound.add('transition', { loop: false, volume: 1 });
+        }
+        if (!this.transitionSound2) {
+            this.transitionSound2 = this.scene.sound.add('transition2', { loop: false, volume: 1 });
         }
         this.lastBeat = 0;
     }
@@ -43,6 +53,18 @@ export class MusicManager {
         }
         if (currentTime < this.lastBeat) {
             this.lastBeat = 0;
+        }
+    }
+
+    public playTransition() {
+        if (this.transitionSound) {
+            this.transitionSound.play();
+        }
+    }
+
+    public playTransition2() {
+        if (this.transitionSound2) {
+            this.transitionSound2.play();
         }
     }
 }

@@ -35,10 +35,8 @@ export class TextElement extends LevelElement {
         this.sprite.setPadding(2, 2, 2, 2);
         this.sprite.setStyle({
             align: 'center',
-            stroke: '#000',
-            strokeThickness: 2,
         });
-        this.sprite.setDepth(1000);
+        this.sprite.setDepth(-1000);
         this.sprite.setScrollFactor(0);
     }
 

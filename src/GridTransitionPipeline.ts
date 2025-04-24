@@ -11,7 +11,7 @@ export class GridTransitionPipeline extends Phaser.Renderer.WebGL.Pipelines.Mult
     /**
      * The number of grid cells horizontally and vertically.
      */
-    public gridSize: Phaser.Math.Vector2 = new Phaser.Math.Vector2(6, 9); // Default 10x10 grid
+    public gridSize: Phaser.Math.Vector2 = new Phaser.Math.Vector2(7, 9); // Default 10x10 grid
 
     constructor(game: Phaser.Game) {
         super({

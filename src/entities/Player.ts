@@ -9,6 +9,7 @@ import { WeightUndoable } from './WeightUndoable';
 import { BoxUndoable } from './BoxUndoable';
 import { TargetManagerUndoable } from './TargetManagerUndoable';
 import { targetManager } from './TargetManager';
+import { Box } from './Box';
 
 const PLAYER_MAX_SPEED = 200;
 const PLAYER_ACCELERATION = 800;
@@ -134,7 +135,7 @@ export class Player {
             const boxAtNext = this.mainScene.getBoxAt(nextX, nextY, currentWindowId);
             if (boxAtNext) {
                 // Collect all contiguous boxes in the push direction
-                let boxesToPush: any[] = [];
+                let boxesToPush: Box[] = [];
                 let checkX = nextX;
                 let checkY = nextY;
                 let currentBoxWindowId = currentWindowId;

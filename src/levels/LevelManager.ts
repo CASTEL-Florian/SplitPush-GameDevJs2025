@@ -5,7 +5,7 @@ import { leftLevels, rightLevels, playerStartPositions } from '../levels/LevelDe
 import { targetManager } from '../entities/TargetManager';
 import { gameBridge, Events } from '../GameBridge';
 
-const TILEMAP_WIDTH = 6;
+const TILEMAP_WIDTH = 7;
 
 export interface LevelDef {
     elements: any[];

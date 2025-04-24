@@ -58,7 +58,7 @@ export default class MainScene extends Phaser.Scene {
     
     private windowId!: WindowID; // 'left' or 'right' - set during init
     private player!: Player;
-    private lastLevelIndex: number = 0;
+    public lastLevelIndex: number = 0;
     private musicManager?: MusicManager;
     public isWindowMoving: boolean = false;
     private gridTransitionSprite?: Phaser.GameObjects.Sprite;
@@ -130,7 +130,6 @@ export default class MainScene extends Phaser.Scene {
 
         // Optional: Add background color for visual distinction
         this.cameras.main.setBackgroundColor(this.windowId === 'left' ? '#92C5C6' : '#FBBD82');
-        this.add.text(10, 10, `Window: ${this.windowId}`, { color: '#000000', fontSize: '16px' });
         console.log(`[${this.windowId}] Scene Created`);
     }
 
@@ -236,6 +235,10 @@ export default class MainScene extends Phaser.Scene {
             }
             console.log(`[${this.windowId}] Box respawned at ${data.x}, ${data.y}`);
             const box = this.getAllBoxes(this.windowId).find(b => b.boxId === data.boxId);
+            if (!box) {
+                console.error(`[${this.windowId}] Box with ID ${data.boxId} not found in current level.`);
+                return;
+            }
             box?.spawn(scene, this.windowId);
 
         };
@@ -271,12 +274,12 @@ export default class MainScene extends Phaser.Scene {
         return tileValue === -1;
     }
 
-    public currentTilemapDataWidth(): number | undefined {
-        if (!levelManager) return undefined;
+    public currentTilemapDataWidth(): number {
+        if (!levelManager) return -1;
         // Get the current level for the given window
         const levelArr = this.windowId === 'left' ? levelManager.leftLevels : levelManager.rightLevels;
         const level = levelArr[this.lastLevelIndex];
-        if (!level || !level.tileset || !level.tilemapData) return undefined;
+        if (!level || !level.tileset || !level.tilemapData) return -1;
         return level.tilemapData.mapWidthInTiles;
     }
 
@@ -289,6 +292,7 @@ export default class MainScene extends Phaser.Scene {
         const pipeline = this.gridTransitionSprite.pipeline as GridTransitionPipeline;
         if (!pipeline) return;
 
+        this.musicManager?.playTransition();
         const duration = 1000; // ms for each transition
         let startTime: number | null = null;
 
@@ -306,6 +310,7 @@ export default class MainScene extends Phaser.Scene {
                 requestAnimationFrame(animateForward);
             } else {
                 // After forward transition, load next level and play reverse
+                this.musicManager?.playTransition2();
                 this.loadNextLevel();
                 startTime = null;
                 requestAnimationFrame(animateReverse);

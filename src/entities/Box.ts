@@ -5,6 +5,7 @@ import { getTileSize } from "../levels/LevelManager";
 import { weightManager, WeightManager } from "../WeightManager";
 import { leftLevels, rightLevels } from "../levels/LevelDefinitions";
 import { targetManager } from "./TargetManager";
+import MainScene from "../scenes/MainScene";
 
 export class Box extends LevelElement {
     static nextBoxId = 1;
@@ -17,7 +18,7 @@ export class Box extends LevelElement {
     tileSize: number;
     spawned: boolean = false;
     boxType: string;
-    private windowId: WindowID;
+    public windowId: WindowID;
     private scene: Phaser.Scene | null = null;
     private static getBoxTargetAt: ((x: number, y: number, windowId: WindowID) => any) | null = null;
     private isOnTarget: boolean = false;
@@ -165,7 +166,6 @@ export class Box extends LevelElement {
         }
         const isOnTarget = newTarget && newTarget.boxType === this.boxType;
 
-        console.log('Is on target:', isOnTarget);
         // Animate if needed
         this.updateTargetAnimation(isOnTarget);
 
@@ -200,7 +200,7 @@ export class Box extends LevelElement {
             }
             // Add this box to the new LevelDef's elements array (first level for now)
             if (newArray.length > 0) {
-                newArray[0].elements.push(this);
+                newArray[(this.scene as MainScene).lastLevelIndex].elements.push(this);
             }
             gameBridge.emit(Events.BOX_RESPAWN, {
                 x: destX,
@@ -220,6 +220,7 @@ export class Box extends LevelElement {
     }
 
     public moveBoxToPosition(destX: number, destY: number, destWindowId: WindowID): void {
+        console.log("test");
         // --- Target check: before move ---
         let prevTarget: any = null;
         if (Box.getBoxTargetAt) {
@@ -252,7 +253,7 @@ export class Box extends LevelElement {
                 targetManager.decrementTargets();
             }
         }
-
+        
         if (this.windowId != destWindowId){
             // Remove the box from the level manager and add it to the new window
             this.despawn(this.scene!);
@@ -267,8 +268,10 @@ export class Box extends LevelElement {
                 }
             }
             // Add this box to the new LevelDef's elements array (first level for now)
+            
             if (newArray.length > 0) {
-                newArray[0].elements.push(this);
+                console.log(`Adding box to new level: ${newArray[(this.scene as MainScene).lastLevelIndex].elements.length}`);
+                newArray[(this.scene as MainScene).lastLevelIndex].elements.push(this);
             }
             gameBridge.emit(Events.BOX_RESPAWN, {
                 x: destX,
