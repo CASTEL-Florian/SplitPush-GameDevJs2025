@@ -17,7 +17,7 @@ export class GridTransitionPipeline extends Phaser.Renderer.WebGL.Pipelines.Mult
         super({
             name: 'GridTransitionPipeline',
             game: game,
-            renderTarget: true, // Crucial for transitions/post-processing
+            renderTarget: true,
             fragShader: `
                 precision mediump float;
 

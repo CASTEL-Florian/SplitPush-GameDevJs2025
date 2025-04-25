@@ -7,12 +7,13 @@ import { weightManager } from '../WeightManager';
 import { Box } from '../entities/Box';
 import { BoxPositionData } from '../GameBridge';
 import { gameBridge } from '../GameBridge';
-import { GridTransitionPipeline } from '../GridTransitionPipeline';
+import { GridTransitionPipeline } from '../Pipelines/GridTransitionPipeline';
 import { WINDOW_HEIGHT, WINDOW_WIDTH } from '../game';
 import { MusicManager } from '../MusicManager';
 import { undoManager } from '../undo/UndoManager';
 import { BoxTarget } from '../entities/BoxTarget';
 import { PlayerTarget } from '../entities/PlayerTarget';
+import { ScanlinePipeline } from '../Pipelines/ScanLinePipeline';
 
 export default class MainScene extends Phaser.Scene {
     /**
@@ -65,6 +66,7 @@ export default class MainScene extends Phaser.Scene {
     private musicManager?: MusicManager;
     public isWindowMoving: boolean = false;
     private gridTransitionSprite?: Phaser.GameObjects.Sprite;
+    private scanLineSprite?: Phaser.GameObjects.Sprite;
     public isTransitioning: boolean = false;
 
     constructor() {
@@ -106,6 +108,9 @@ export default class MainScene extends Phaser.Scene {
         if (this.game.renderer instanceof Phaser.Renderer.WebGL.WebGLRenderer && !this.game.renderer.pipelines.has('GridTransitionPipeline')) {
             this.game.renderer.pipelines.add('GridTransitionPipeline', new GridTransitionPipeline(this.game));
         }
+        if (this.game.renderer instanceof Phaser.Renderer.WebGL.WebGLRenderer && !this.game.renderer.pipelines.has('ScanlinePipeline')) {
+            this.game.renderer.pipelines.add('ScanlinePipeline', new ScanlinePipeline(this.game));
+        }
         // Add a fullscreen sprite (using a 1x1 white texture scaled up)
         const width = this.cameras.main.width;
         const height = this.cameras.main.height;
@@ -120,7 +125,13 @@ export default class MainScene extends Phaser.Scene {
             .setOrigin(0, 0)
             .setDisplaySize(width, height)
             .setDepth(1000); // ensure it's above everything
-        this.gridTransitionSprite.setPipeline('GridTransitionPipeline'); 
+        this.gridTransitionSprite.setPipeline('GridTransitionPipeline');
+
+        this.scanLineSprite = this.add.sprite(0, 0, 'white1x1')
+            .setOrigin(0, 0)
+            .setDisplaySize(width, height)
+            .setDepth(1000);
+        this.scanLineSprite.setPipeline('ScanlinePipeline');
 
         // Setup game elements (player and physics bounds)
         this.setupGame();
