@@ -89,6 +89,7 @@ export class Player {
         }
 
         if (!this.isInWindow) return;
+        if (this.mainScene.isTransitioning) return;
         if (this._moveLock) return;
         if (undo) {
             this._moveLock = true;
@@ -195,8 +196,10 @@ export class Player {
                 windowId: currentWindowId
             });
 
+            console.log("Checking if player target is filled...");
             if (this.mainScene.getPlayerTargetAt(nextX, nextY, currentWindowId)) {
                 // Check if all the box targets are filled
+                console.log("Checking if all targets are filled...");
                 const allTargetsFilled = targetManager.getCurrentTargets() === targetManager.getTotalTargets();
                 if (allTargetsFilled) {
                     // Emit event to notify the game is won

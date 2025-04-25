@@ -11,6 +11,8 @@ import { GridTransitionPipeline } from '../GridTransitionPipeline';
 import { WINDOW_HEIGHT, WINDOW_WIDTH } from '../game';
 import { MusicManager } from '../MusicManager';
 import { undoManager } from '../undo/UndoManager';
+import { BoxTarget } from '../entities/BoxTarget';
+import { PlayerTarget } from '../entities/PlayerTarget';
 
 export default class MainScene extends Phaser.Scene {
     /**
@@ -21,7 +23,7 @@ export default class MainScene extends Phaser.Scene {
         const level = levelArr[this.lastLevelIndex];
         if (!level) return [];
         // Only return elements that are Box
-        return level.elements.filter(e => e.constructor.name === 'Box') as import("../entities/Box").Box[];
+        return level.elements.filter(e => e instanceof Box) as import("../entities/Box").Box[];
     }
 
     public getAllTargets(windowId: WindowID): import("../entities/BoxTarget").BoxTarget[] {
@@ -29,7 +31,7 @@ export default class MainScene extends Phaser.Scene {
         const level = levelArr[this.lastLevelIndex];
         if (!level) return [];
         // Only return elements that are BoxTarget
-        return level.elements.filter(e => e.constructor.name === 'BoxTarget') as import("../entities/BoxTarget").BoxTarget[];
+        return level.elements.filter(e => e instanceof BoxTarget) as import("../entities/BoxTarget").BoxTarget[];
     }
 
     public getAllPlayerTargets(windowId: WindowID): import("../entities/PlayerTarget.ts").PlayerTarget[] {
@@ -37,7 +39,8 @@ export default class MainScene extends Phaser.Scene {
         const level = levelArr[this.lastLevelIndex];
         if (!level) return [];
         // Only return elements that are PlayerTarget
-        return level.elements.filter(e => e.constructor.name === 'PlayerTarget') as import("../entities/PlayerTarget.ts").PlayerTarget[];
+        console.log(level.elements);
+        return level.elements.filter(e => e instanceof PlayerTarget) as import("../entities/PlayerTarget.ts").PlayerTarget[];
     }
 
     /**
@@ -62,6 +65,7 @@ export default class MainScene extends Phaser.Scene {
     private musicManager?: MusicManager;
     public isWindowMoving: boolean = false;
     private gridTransitionSprite?: Phaser.GameObjects.Sprite;
+    public isTransitioning: boolean = false;
 
     constructor() {
         super({ key: 'MainScene' });
@@ -87,7 +91,7 @@ export default class MainScene extends Phaser.Scene {
         this.load.image('darkOrb', 'assets/darkOrb.png');
         this.load.image('lightTeleporter', 'assets/lightTeleporter.png');
         this.load.image('darkTeleporter', 'assets/darkTeleporter.png');
-        this.load.image('tiles', 'assets/tiles.png');
+        this.load.image('tiles', 'assets/tiles2.png');
         this.load.image('box', 'assets/box.png');
         this.load.image('box_target', 'assets/box_target.png');
         this.load.image('player_target', 'assets/player_target.png');
@@ -213,8 +217,6 @@ export default class MainScene extends Phaser.Scene {
                 container.style.transform = `translateY(${weightManager.getInitialY()}px)`;
             }
         }
-        weightManager.leftWeight = 1;
-        weightManager.rightWeight = 1;
 
         // Create LevelManager with all levels and load the first level
         this.lastLevelIndex = 0;
@@ -292,6 +294,7 @@ export default class MainScene extends Phaser.Scene {
         const pipeline = this.gridTransitionSprite.pipeline as GridTransitionPipeline;
         if (!pipeline) return;
 
+        this.isTransitioning = true;
         this.musicManager?.playTransition();
         const duration = 1000; // ms for each transition
         let startTime: number | null = null;
@@ -329,6 +332,7 @@ export default class MainScene extends Phaser.Scene {
                 requestAnimationFrame(animateReverse);
             } else {
                 pipeline.progress = 0;
+                this.isTransitioning = false;
             }
         };
 
@@ -342,6 +346,8 @@ export default class MainScene extends Phaser.Scene {
         levelManager.despawn(this.lastLevelIndex, this, this.windowId);
         this.lastLevelIndex++;
         levelManager.spawn(this.lastLevelIndex, this, this.windowId);
+        weightManager.leftWeight = 0;
+        weightManager.rightWeight = 0;
         undoManager.clear();
     }
 }
