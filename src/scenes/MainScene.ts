@@ -88,7 +88,7 @@ export default class MainScene extends Phaser.Scene {
 
 
     preload(): void {
-        this.load.image('player', 'assets/playerFront.png');
+        this.load.image('player', 'assets/player.png');
         this.load.image('lightOrb', 'assets/lightOrb.png');
         this.load.image('darkOrb', 'assets/darkOrb.png');
         this.load.image('lightTeleporter', 'assets/lightTeleporter.png');

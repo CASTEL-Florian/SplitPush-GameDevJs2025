@@ -11,12 +11,12 @@ import { TargetManagerUndoable } from './TargetManagerUndoable';
 import { targetManager } from './TargetManager';
 import { Box } from './Box';
 
-const PLAYER_MAX_SPEED = 200;
-const PLAYER_ACCELERATION = 800;
-const PLAYER_DECELERATION = 200;
+export type EyesDirection = 'right' | 'left' | 'up' | 'down' | 'none';
 
 export class Player {
-    public sprite: Phaser.GameObjects.Sprite;
+    public sprite: Phaser.GameObjects.Container;
+    private eyesSprite: Phaser.GameObjects.Sprite;
+    private eyesDirection: EyesDirection = 'none';
     private windowId: WindowID;
     private tileX: number;
     private tileY: number;
@@ -34,12 +34,20 @@ export class Player {
         this.tileSize = getTileSize();
         // Get MainScene reference
         this.mainScene = scene;
-        // Place sprite at correct position
-        this.sprite = scene.add.sprite(
+        // Create a container to group the player sprite and eyes sprite
+        this.sprite = scene.add.container(
             this.tileX * this.tileSize + this.tileSize / 2,
-            this.tileY * this.tileSize + this.tileSize / 2,
-            'player'
-        ).setDisplaySize(32, 32);
+            this.tileY * this.tileSize + this.tileSize / 2
+        );
+        const tileSize = getTileSize();
+        // Add player sprite to the container
+        const playerSprite = scene.add.sprite(0, 0, 'player').setDisplaySize(tileSize, tileSize);
+        this.sprite.add(playerSprite);
+        // Add eyes sprite to the container
+        this.eyesSprite = scene.add.sprite(0, 0, 'eyes').setDisplaySize(tileSize, tileSize);
+        this.sprite.add(this.eyesSprite);
+        this.eyesSprite.setDepth(1);
+        this.setEyes('none');
 
         this.isInWindow = windowId === 'left';
         this.sprite.alpha = this.isInWindow ? 1 : 0;
@@ -50,8 +58,33 @@ export class Player {
         return this.sprite;
     }
 
+    private setEyes(direction: EyesDirection) {
+        this.eyesDirection = direction;
+        switch (direction) {
+            case 'right':
+                this.eyesSprite.setTexture('eyes_right');
+                this.eyesSprite.setFlipX(false);
+                break;
+            case 'left':
+                this.eyesSprite.setTexture('eyes_right');
+                this.eyesSprite.setFlipX(true);
+                break;
+            case 'up':
+                this.eyesSprite.setTexture('eyes_up');
+                this.eyesSprite.setFlipX(false);
+                break;
+            case 'down':
+                this.eyesSprite.setTexture('eyes_down');
+                this.eyesSprite.setFlipX(false);
+                break;
+            default:
+                this.eyesSprite.setTexture('eyes');
+                this.eyesSprite.setFlipX(false);
+        }
+    }
+
     private setupBridgeListeners(scene: Phaser.Scene): void {
-        const handlePlayerUpdate = (data: PlayerPositionData) => {
+        const handlePlayerUpdate = (data: PlayerPositionData & { eyesDirection?: EyesDirection }) => {
             this._moveLock = true;
             if (data.windowId === this.windowId) {
                 this.isInWindow = true;
@@ -67,6 +100,11 @@ export class Player {
                 this.tileX * this.tileSize + this.tileSize / 2,
                 this.tileY * this.tileSize + this.tileSize / 2
             );
+            if (data.eyesDirection) {
+                this.setEyes(data.eyesDirection);
+            } else {
+                this.setEyes('none');
+            }
         };
         gameBridge.on(Events.PLAYER_POSITION_UPDATE, handlePlayerUpdate);
         scene.events.on(Phaser.Scenes.Events.SHUTDOWN, () => {
@@ -102,10 +140,11 @@ export class Player {
             return;
         }
         let dx = 0, dy = 0;
-        if (left) dx = -1;
-        else if (right) dx = 1;
-        else if (up) dy = -1;
-        else if (down) dy = 1;
+        let eyesDir: EyesDirection = 'none';
+        if (left) { dx = -1; eyesDir = 'left'; }
+        else if (right) { dx = 1; eyesDir = 'right'; }
+        else if (up) { dy = -1; eyesDir = 'up'; }
+        else if (down) { dy = 1; eyesDir = 'down'; }
         if (dx !== 0 || dy !== 0) {
             this._moveLock = true;
             // Find last empty tile in this direction
@@ -188,12 +227,14 @@ export class Player {
                     weightManager.leftWeight -= 0.5;
                 }
             }
-            undoManager.register(new PlayerStateUndoable(this.tileX, this.tileY, this.windowId));
+            undoManager.register(new PlayerStateUndoable(this.tileX, this.tileY, this.windowId, this.eyesDirection));
+            this.setEyes(eyesDir);
             undoManager.beginNewStep();
             gameBridge.emit(Events.PLAYER_POSITION_UPDATE, {
                 x: nextX,
                 y: nextY,
-                windowId: currentWindowId
+                windowId: currentWindowId,
+                eyesDirection: eyesDir
             });
 
             console.log("Checking if player target is filled...");
