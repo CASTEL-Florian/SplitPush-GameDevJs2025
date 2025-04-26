@@ -345,11 +345,13 @@ export default class MainScene extends Phaser.Scene {
             if (t < 1) {
                 requestAnimationFrame(animateForward);
             } else {
-                // After forward transition, load next level and play reverse
-                this.musicManager?.playTransition2();
+                // After forward transition, load next level and play reverse after 0.5s delay
                 this.loadNextLevel();
                 startTime = null;
-                requestAnimationFrame(animateReverse);
+                setTimeout(() => {
+                    this.musicManager?.playTransition2();
+                    requestAnimationFrame(animateReverse);
+                }, 100);
             }
         };
 

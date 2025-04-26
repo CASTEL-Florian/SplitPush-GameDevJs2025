@@ -49,13 +49,16 @@ export class MusicManager {
     update() {
         if (!this.mainMusic || !this.mainMusic.isPlaying) return;
         const currentTime = (this.mainMusic as Phaser.Sound.HTML5AudioSound).seek;
+        if (currentTime < this.lastBeat) {
+            // Music looped, reset and trigger beat callback
+            this.lastBeat = 0;
+            this.isLastBeatOdd = !this.isLastBeatOdd;
+            if (this.onBeatCallback) this.onBeatCallback();
+        }
         if (currentTime - this.lastBeat >= this.beatInterval) {
             this.lastBeat += this.beatInterval;
             this.isLastBeatOdd = !this.isLastBeatOdd;
             if (this.onBeatCallback) this.onBeatCallback();
-        }
-        if (currentTime < this.lastBeat) {
-            this.lastBeat = 0;
         }
     }
 
