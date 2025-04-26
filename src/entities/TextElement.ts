@@ -1,5 +1,6 @@
 import { LevelElement } from '../levels/LevelElement';
 import { WindowID } from '../GameBridge';
+import { WINDOW_WIDTH } from '../game';
 
 export class TextElement extends LevelElement {
     text: string;
@@ -24,9 +25,9 @@ export class TextElement extends LevelElement {
     spawn(scene: Phaser.Scene, windowId: WindowID): void {
         if (this.sprite) return;
         this.scene = scene;
-        this.sprite = scene.add.text(this.x, this.y, this.text, {
+        this.sprite = scene.add.text(this.x / 378 * WINDOW_WIDTH, this.y / 378 * WINDOW_WIDTH, this.text, {
             fontFamily: 'monospace, "Press Start 2P", "VT323", "Courier New", Courier',
-            fontSize: `${this.size}px`,
+            fontSize: `${this.size / 378 * WINDOW_WIDTH}px`,
             color: this.color,
             fontStyle: this.isBold ? 'bold' : 'normal',
             resolution: 2,
