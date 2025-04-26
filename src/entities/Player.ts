@@ -27,6 +27,10 @@ export class Player {
     private bobOffset: number = 0;
     private bobTween?: Phaser.Tweens.Tween;
 
+    // Add timer tracking for movement lock
+    private _lastMoveLockDir: 'left' | 'right' | 'up' | 'down' | null = null;
+    private _moveLockTimer: ReturnType<typeof setTimeout> | null = null;
+
     constructor(scene: MainScene, windowId: WindowID) {
         this.windowId = windowId;
         // Start in the center of the map (tile coordinates)
@@ -110,6 +114,20 @@ export class Player {
             // Apply moveLocks if present
             if (data.moveLocks) {
                 this._moveLock = { ...data.moveLocks };
+                // --- Auto-unlock logic for movement locks from bridge ---
+                if (data.lastMoveLockDir) {
+                    if (this._moveLockTimer) {
+                        clearTimeout(this._moveLockTimer);
+                        this._moveLockTimer = null;
+                    }
+                    this._lastMoveLockDir = data.lastMoveLockDir;
+                    this._moveLockTimer = setTimeout(() => {
+                        if (this._lastMoveLockDir === data.lastMoveLockDir) {
+                            this._moveLock[data.lastMoveLockDir!] = false;
+                            this._moveLockTimer = null;
+                        }
+                    }, 300);
+                }
             }
         };
 
@@ -208,6 +226,20 @@ export class Player {
 
         if (moveDirection) {
             this._moveLock[moveDirection] = true;
+
+            // --- Auto-unlock logic for movement locks ---
+            if (this._moveLockTimer) {
+                clearTimeout(this._moveLockTimer);
+                this._moveLockTimer = null;
+            }
+            this._lastMoveLockDir = moveDirection;
+            this._moveLockTimer = setTimeout(() => {
+                if (this._lastMoveLockDir === moveDirection) {
+                    this._moveLock[moveDirection] = false;
+                    this._moveLockTimer = null;
+                }
+            }, 500);
+
             // Find last empty tile in this direction
             let tx = this.tileX;
             let ty = this.tileY;
@@ -296,7 +328,8 @@ export class Player {
                 y: nextY,
                 windowId: currentWindowId,
                 eyesDirection: eyesDir,
-                moveLocks: { ...this._moveLock }
+                moveLocks: { ...this._moveLock },
+                lastMoveLockDir: moveDirection // Always send the last move lock dir
             });
             gameBridge.emit(Events.PLAY_SFX, { sfx: 'move' });
             const playerTarget = this.mainScene.getPlayerTargetAt(nextX, nextY, currentWindowId)
