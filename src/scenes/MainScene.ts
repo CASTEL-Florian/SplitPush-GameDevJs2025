@@ -191,6 +191,7 @@ export default class MainScene extends Phaser.Scene {
                 const eased = ease(t);
                 const y = fromY + (toY - fromY) * eased;
                 container.style.transform = `translateY(${y}px)`;
+                (window as any).notifyGamePositionChanged?.();
                 if (t < 1) {
                     animState.frame = requestAnimationFrame(step);
                 } else {

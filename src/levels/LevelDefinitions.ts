@@ -41,7 +41,7 @@ export const leftLevel2: LevelDef = {
 
 export const rightLevel2: LevelDef = {
     elements: [
-        new Box(2, 6, 0.5, 'right'),
+        new Box(4, 6, 0.5, 'right'),
         new PlayerTarget(2, 2),
         new BoxTarget(4, 2, 'default'),
     ],
@@ -192,7 +192,7 @@ export const rightLevels: LevelDef[] = [rightLevel1, rightLevel2, rightLevel3, r
 
 export const playerStartPositions: PlayerPositionData[] = [
     { windowId: 'left', x: 2, y: 6 }, // Level 1
-    { windowId: 'right', x: 4, y: 6 }, // Level 2
+    { windowId: 'right', x: 2, y: 6 }, // Level 2
     { windowId: 'left', x: 2, y: 3 }, // Level 3
     { windowId: 'left', x: 2, y: 3 }, // Level 4
     { windowId: 'left', x: 2, y: 2 }, // Level 5

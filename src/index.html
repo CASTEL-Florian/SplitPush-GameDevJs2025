@@ -3,57 +3,221 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dual Window Game</title>
+    <title>Split Push - A Balance Game</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&family=Roboto+Mono:wght@400&display=swap" rel="stylesheet">
     <style>
-        body {
-            display: flex;
-            flex-direction: column; /* Stack main container and text vertically */
-            align-items: center;
-            margin-top: 20px;
-            background-color: #222;
+        :root {
+            --bg-color: #1a1a1a;
+            --text-color: #e0e0e0;
+            --heading-color: #ffffff;
+            --accent-color: #4a90e2;
+            --border-color: #444;
+            --container-bg: #282828;
+            --game-width: 462px;
+            --game-height: 594px;
+            --gap: 20px;
+            --total-game-width: calc(var(--game-width) * 2 + var(--gap));
+            --wrapper-vertical-padding: 100px;
         }
-        .games-wrapper {
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            height: 1320px;
-        }
-        .game-container {
-            border: 2px solid #555;
-        }
-        #game-container-left {
-            margin-right: 20px;
-        }
-        .title {
-            color: #fff;
-            font-size: 2rem;
-            margin-top: 32px;
-            margin-bottom: 8px;
-            text-align: left;
-        }
-        .subtitle {
-            color: #bbb;
-            font-size: 1.1rem;
-            margin-bottom: 0;
-            text-align: left;
-        }
-        .text-wrapper {
-            content: center;
-            width: 100%;
-            max-width: calc(944px);
+
+        * {
             box-sizing: border-box;
         }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            padding: 40px 20px;
+            font-family: 'Poppins', sans-serif;
+            background: radial-gradient(ellipse at center, #333 0%, var(--bg-color) 70%);
+            color: var(--text-color);
+            min-height: 100vh;
+            position: relative;
+        }
+
+        .games-positioning-wrapper {
+            position: relative;
+            width: var(--total-game-width);
+            /* Height allows for vertical movement space */
+            height: calc(var(--game-height) + var(--wrapper-vertical-padding) * 2);
+            display: flex;
+            justify-content: center;
+            margin-bottom: var(--gap); /* Initial space before text potentially moves */
+        }
+
+        .game-container {
+            position: absolute; /* Positioned relative to games-positioning-wrapper */
+            width: var(--game-width);
+            height: var(--game-height);
+            background-color: var(--container-bg); /* See game canvas */
+            transition: transform 0.3s ease-out; /* Smooth movement */
+            /* Initial transform can be set here or by JS */
+             transform: translateY(var(--wrapper-vertical-padding));
+        }
+
+        #game-container-left {
+            /* Positioned horizontally using absolute positioning */
+            left: 0;
+        }
+
+        #game-container-right {
+            /* Positioned horizontally using absolute positioning */
+            right: 0;
+        }
+
+        /* The text wrapper will be absolutely positioned */
+        .text-wrapper {
+            position: absolute; /* Positioned relative to BODY */
+            width: 100%;
+            max-width: var(--total-game-width); /* Match width of games area */
+            padding: 20px;
+            background-color: rgba(40, 40, 40, 0.8); /* Slightly transparent background */
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+            margin-top: 30px; /* Default margin, will be overridden by JS */
+            /* Centering using left/transform */
+            left: 50%;
+            transform: translateX(-50%);
+            /* top will be set by JS */
+            transition: top 0.2s linear; /* Smooth vertical adjustment */
+            top: 994px;
+        }
+
+        .text-wrapper h1, .text-wrapper h2 {
+            color: var(--heading-color);
+            margin-top: 0;
+            margin-bottom: 10px;
+            font-weight: 700;
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 5px;
+        }
+
+        .text-wrapper h1 {
+            font-size: 2.2rem;
+            text-align: center;
+            border-bottom: none; /* No border for main title */
+            margin-bottom: 5px;
+        }
+         .text-wrapper .subtitle {
+            color: #bbb;
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+            text-align: center;
+            font-weight: 400;
+        }
+
+        .text-wrapper h2 {
+            font-size: 1.5rem;
+            margin-top: 25px;
+        }
+
+        .text-wrapper p, .text-wrapper ul {
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+
+        .text-wrapper ul {
+            list-style: disc;
+            margin-left: 20px;
+        }
+
+        .text-wrapper code {
+            font-family: 'Roboto Mono', monospace;
+            background-color: #333;
+            padding: 2px 5px;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+
+        .text-wrapper a {
+            color: var(--accent-color);
+            text-decoration: none;
+        }
+        .text-wrapper a:hover {
+            text-decoration: underline;
+        }
+
     </style>
 </head>
 <body>
-    <div class="games-wrapper">
-        <div id="game-container-left" class="game-container"></div>
-        <div id="game-container-right" class="game-container"></div>
+    <!-- This wrapper defines the area where games CAN be -->
+    <div class="games-positioning-wrapper">
+        <div id="game-container-left" class="game-container">
+        </div>
+        <div id="game-container-right" class="game-container">
+        </div>
     </div>
-    <div class="text-wrapper">
-        <div class="title">Split push</div>
-        <div class="subtitle">Made for Gamedev.js Jam 2025 on the theme "Balance".</div>
+
+    <!-- This text wrapper will be moved dynamically -->
+    <div class="text-wrapper" id="info-section">
+        <h1>Split Push</h1>
+        <p class="subtitle">Made for Gamedev.js Jam 2025 on the theme "Balance".</p>
+
+        <h2>Game Description</h2>
+        <p>
+            Push boxes, solve puzzles and shift the Balance! Push the boxes onto the targets. But be careful! Moving between the two game windows shifts the balance of the game.
+        </p>
+
+        <h2>Context</h2>
+        <p>
+            This game was created in about a week for Gamedev.js Jam 2025 on the theme <b>"Balance"</b>. The game uses the engine Phaser 3 and is written in TypeScript.
+        </p>
+
+        <h2>Controls</h2>
+        <ul>
+            <li><code>Arrow Keys</code> or <code>WASD</code>: Move the character.</li>
+            <li><code>R</code>: Restart the current level.</li>
+            <li><code>U</code>: Undo last move.</li>
+        </ul>
+
+        <h2>Assets Used</h2>
+        <ul>
+            <li>Music <b>BRAIN TEASER 3</b> by Eric Matyas - www.soundimage.org</li>
+            <li>All the visuals and sound effects were created by me.</li>
+
+        </ul>
     </div>
+
+    <!-- Load your game bundle AFTER the containers exist -->
     <script type="module" src="/bundle.js"></script>
+
+    <script>
+        const gameLeft = document.getElementById('game-container-left');
+        const gameRight = document.getElementById('game-container-right');
+        const textWrapper = document.getElementById('info-section');
+        const gamesPositioningWrapper = document.querySelector('.games-positioning-wrapper');
+        const textMarginBottom = 30; // Space between lowest game and text block
+
+        function updateTextPosition() {
+            // Get the bounding rectangles relative to the viewport
+            const rectLeft = gameLeft.getBoundingClientRect();
+            const rectRight = gameRight.getBoundingClientRect();
+
+            // Find the lowest bottom edge relative to the viewport
+            const lowestBottomViewport = Math.max(rectLeft.bottom, rectRight.bottom);
+
+            // Calculate the desired top position for the text wrapper relative to the document
+            // We need the top position of the games' positioning wrapper relative to the document
+            const wrapperScrollTop = gamesPositioningWrapper.offsetTop;
+
+            // The lowest bottom relative to the start of the gamesPositioningWrapper
+            const lowestBottomRelative = lowestBottomViewport - gamesPositioningWrapper.getBoundingClientRect().top;
+
+            // The final top position for the text block in document coordinates
+            const newTextTop = wrapperScrollTop + lowestBottomRelative + textMarginBottom;
+
+            textWrapper.style.top = `${newTextTop}px`;
+
+            // Optional: Adjust body paddingBottom to ensure scrollbar appears if needed
+            document.body.style.paddingBottom = `${textWrapper.offsetHeight + textMarginBottom * 2}px`;
+        }
+
+        window.notifyGamePositionChanged = updateTextPosition;
+    </script>
 </body>
 </html>
