@@ -1,6 +1,6 @@
 // MainScene.ts
 import Phaser from 'phaser';
-import { Events, WindowID } from '../GameBridge'
+import { Events, WinData, WindowID } from '../GameBridge'
 import { Player } from '../entities/Player';
 import { levelManager } from '../levels/LevelManager';
 import { weightManager } from '../WeightManager';
@@ -262,8 +262,8 @@ export default class MainScene extends Phaser.Scene {
         };
         gameBridge.on(Events.BOX_RESPAWN, handleBoxUpdate);
 
-        const handleWin = (data: any) => {
-            this.transitionToNextLevel();
+        const handleWin = (data: WinData) => {
+            this.transitionToNextLevel(data.backToLevel1);
             console.log(`[${this.windowId}] Transitioning to next level.`);
         };
         gameBridge.on(Events.GAME_WON, handleWin);
@@ -322,7 +322,7 @@ export default class MainScene extends Phaser.Scene {
      * Transitions to the next level using the gridTransitionSprite.
      * Animates progress from 0 to 1, loads the next level, then animates from 1 to 0.
      */
-    public transitionToNextLevel(): void {
+    public transitionToNextLevel(backToLevel1: boolean): void {
         if (!this.gridTransitionSprite) return;
         const pipeline = this.gridTransitionSprite.pipeline as GridTransitionPipeline;
         if (!pipeline) return;
@@ -346,7 +346,7 @@ export default class MainScene extends Phaser.Scene {
                 requestAnimationFrame(animateForward);
             } else {
                 // After forward transition, load next level and play reverse after 0.5s delay
-                this.loadNextLevel();
+                this.loadNextLevel(backToLevel1);
                 startTime = null;
                 setTimeout(() => {
                     this.musicManager?.playTransition2();
@@ -377,9 +377,18 @@ export default class MainScene extends Phaser.Scene {
     /**
      * Loads the next level and respawns entities.
      */
-    private loadNextLevel(): void {
+    private loadNextLevel(backToLevel1: boolean): void {
         levelManager.despawn(this.lastLevelIndex, this, this.windowId);
-        this.lastLevelIndex++;
+        if (backToLevel1) {
+            this.lastLevelIndex = 0;
+        } else {
+            this.lastLevelIndex++;
+        }
+    
+        if (this.lastLevelIndex >= levelManager.getLevelCount(this.windowId)) {
+            this.lastLevelIndex -= 2;
+        }
+    
         levelManager.spawn(this.lastLevelIndex, this, this.windowId);
         weightManager.leftWeight = 0;
         weightManager.rightWeight = 0;

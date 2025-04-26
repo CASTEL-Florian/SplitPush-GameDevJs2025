@@ -84,3 +84,7 @@ export type BoxPositionData = {
 export type SfxData = {
     sfx: string;
 };
+
+export type WinData = {
+    backToLevel1: boolean;
+};

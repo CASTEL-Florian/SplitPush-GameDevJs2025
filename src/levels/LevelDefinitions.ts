@@ -184,11 +184,30 @@ export const rightLevel10: LevelDef = {
     tilemapPath: 'assets/level10_right.json'
 };
 
-export const leftLevels: LevelDef[] = [leftLevel1, leftLevel2, leftLevel3, leftLevel4, leftLevel5, leftLevel6, leftLevel7, leftLevel8, leftLevel10];
-export const rightLevels: LevelDef[] = [rightLevel1, rightLevel2, rightLevel3, rightLevel4, rightLevel5, rightLevel6, rightLevel7, rightLevel8, rightLevel10];
+// End
+export const leftLevelEnd: LevelDef = {
+    elements: [
+        new TextElement('Thanks for\nplaying!', 200, 200, 40, '#20476B', false),
+    ],
+    tilemapPath: 'assets/level3_left.json'
+};
 
-// export const leftLevels: LevelDef[] = [leftLevel8, leftLevel10];
-// export const rightLevels: LevelDef[] = [rightLevel8, rightLevel10];
+export const rightLevelEnd: LevelDef = {
+    elements: [
+        new TextElement('Back to\nlevel 1', 130, 135, 30, '#20476B', false),
+        new PlayerTarget(4, 2, 'player_target', true),
+        new TextElement('Bonus level\n(hard)', 110, 360, 30, '#20476B', false),
+        new PlayerTarget(4, 6),
+
+    ],
+    tilemapPath: 'assets/level3_right.json'
+};
+
+export const leftLevels: LevelDef[] = [leftLevel1, leftLevel2, leftLevel3, leftLevel4, leftLevel5, leftLevel6, leftLevel7, leftLevel8, leftLevelEnd, leftLevel10];
+export const rightLevels: LevelDef[] = [rightLevel1, rightLevel2, rightLevel3, rightLevel4, rightLevel5, rightLevel6, rightLevel7, rightLevel8, rightLevelEnd, rightLevel10];
+
+// export const leftLevels: LevelDef[] = [leftLevelEnd, leftLevel10];
+// export const rightLevels: LevelDef[] = [rightLevelEnd, rightLevel10];
 
 export const playerStartPositions: PlayerPositionData[] = [
     { windowId: 'left', x: 2, y: 6 }, // Level 1
@@ -199,5 +218,6 @@ export const playerStartPositions: PlayerPositionData[] = [
     { windowId: 'right', x: 4, y: 3 }, // Level 6
     { windowId: 'right', x: 2, y: 4 }, // Level 7
     { windowId: 'left', x: 5, y: 5 }, // Level 8
+    { windowId: 'left', x: 3, y: 5 }, // End
     { windowId: 'right', x: 4, y: 6 }, // Level 10
 ];

@@ -286,13 +286,13 @@ export class Player {
                 eyesDirection: eyesDir
             });
             gameBridge.emit(Events.PLAY_SFX, { sfx: 'move' });
-
-            if (this.mainScene.getPlayerTargetAt(nextX, nextY, currentWindowId)) {
+            const playerTarget = this.mainScene.getPlayerTargetAt(nextX, nextY, currentWindowId)
+            if (playerTarget) {
                 // Check if all the box targets are filled
                 const allTargetsFilled = targetManager.getCurrentTargets() === targetManager.getTotalTargets();
                 if (allTargetsFilled) {
                     // Emit event to notify the game is won
-                    gameBridge.emit(Events.GAME_WON, { windowId: currentWindowId });
+                    gameBridge.emit(Events.GAME_WON, { backToLevel1: playerTarget.isSpecial()});
                     console.log(`[${currentWindowId}] Game won!`);
                 }
             }

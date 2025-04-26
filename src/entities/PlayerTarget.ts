@@ -17,13 +17,16 @@ export class PlayerTarget extends LevelElement {
     private beatListener: (() => void) | null = null;
     private originalScaleX: number = 1;
     private originalScaleY: number = 1;
+    private special: boolean = false; // Special target that goes back to level 1.
 
-    constructor(tileX: number, tileY: number,  spriteKey: string = "player_target") {
+    constructor(tileX: number, tileY: number,  spriteKey: string = "player_target", special: boolean = false) {
         super();
         this.tileX = tileX;
         this.tileY = tileY;
         this.tileSize = 0;
         this.spriteKey = spriteKey;
+        this.special = special;
+
     }
 
     spawn(scene: Phaser.Scene, windowId: WindowID): void {
@@ -105,5 +108,9 @@ export class PlayerTarget extends LevelElement {
             this.sprite.destroy();
             this.sprite = null;
         }
+    }
+
+    public isSpecial(): boolean {
+        return this.special;
     }
 }

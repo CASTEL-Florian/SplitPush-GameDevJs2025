@@ -78,6 +78,15 @@ export class LevelManager {
         }
         return await response.json();
     }
+
+    public getLevelCount(windowId: WindowID): number {
+        if (windowId === 'left') {
+            return this.leftLevelDefs.length;
+        } else if (windowId === 'right') {
+            return this.rightLevelDefs.length;
+        }
+        return 0;
+    }
 }
 
 export const levelManager = new LevelManager(leftLevels, rightLevels);
