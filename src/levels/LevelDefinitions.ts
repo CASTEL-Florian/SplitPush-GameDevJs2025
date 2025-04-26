@@ -194,9 +194,9 @@ export const leftLevelEnd: LevelDef = {
 
 export const rightLevelEnd: LevelDef = {
     elements: [
-        new TextElement('Back to\nlevel 1', 130, 135, 30, '#20476B', false),
+        new TextElement('Back to\nlevel 1', 130, 135, 30, '#995007', false),
         new PlayerTarget(4, 2, 'player_target', true),
-        new TextElement('Bonus level\n(hard)', 110, 360, 30, '#20476B', false),
+        new TextElement('Bonus level\n(hard)', 110, 360, 30, '#995007', false),
         new PlayerTarget(4, 6),
 
     ],
