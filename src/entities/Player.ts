@@ -88,7 +88,6 @@ export class Player {
 
     private setupBridgeListeners(scene: Phaser.Scene): void {
         const handlePlayerUpdate = (data: PlayerPositionData & { eyesDirection?: EyesDirection }) => {
-            this._moveLock = true;
             if (data.windowId === this.windowId) {
                 this.isInWindow = true;
                 this.sprite.alpha = 1;
@@ -107,6 +106,10 @@ export class Player {
                 this.setEyes(data.eyesDirection);
             } else {
                 this.setEyes('none');
+            }
+            // Apply moveLocks if present
+            if (data.moveLocks) {
+                this._moveLock = { ...data.moveLocks };
             }
         };
 
@@ -165,37 +168,46 @@ export class Player {
         const undo = Input.isPressed('KeyU');
         const restart = Input.isPressed('KeyR');
 
-        if (!left && !right && !up && !down && !undo && !restart) {
-            this._moveLock = false;
-        }
+        // Reset move locks for keys that are no longer pressed
+        if (!left) this._moveLock.left = false;
+        if (!right) this._moveLock.right = false;
+        if (!up) this._moveLock.up = false;
+        if (!down) this._moveLock.down = false;
+        if (!undo) this._moveLock.undo = false;
+        if (!restart) this._moveLock.restart = false;
 
         if (!this.isInWindow) return;
         if (this.mainScene.isTransitioning) return;
-        if (this._moveLock) return;
-        if (undo) {
-            this._moveLock = true;
+
+        // Undo
+        if (undo && !this._moveLock.undo) {
+            this._moveLock.undo = true;
             if (undoManager.canUndo()) {
                 undoManager.undo();
                 gameBridge.emit(Events.PLAY_SFX, { sfx: 'undo' });
             }
             return;
         }
-        if (restart) {
-            this._moveLock = true;
+        // Restart
+        if (restart && !this._moveLock.restart) {
+            this._moveLock.restart = true;
             if (undoManager.canUndo()) {
                 undoManager.undoAll();
                 gameBridge.emit(Events.PLAY_SFX, { sfx: 'undo' });
             }
             return;
         }
+
         let dx = 0, dy = 0;
         let eyesDir: EyesDirection = 'none';
-        if (left) { dx = -1; eyesDir = 'left'; }
-        else if (right) { dx = 1; eyesDir = 'right'; }
-        else if (up) { dy = -1; eyesDir = 'up'; }
-        else if (down) { dy = 1; eyesDir = 'down'; }
-        if (dx !== 0 || dy !== 0) {
-            this._moveLock = true;
+        let moveDirection: 'left' | 'right' | 'up' | 'down' | null = null;
+        if (left && !this._moveLock.left) { dx = -1; eyesDir = 'left'; moveDirection = 'left'; }
+        else if (right && !this._moveLock.right) { dx = 1; eyesDir = 'right'; moveDirection = 'right'; }
+        else if (up && !this._moveLock.up) { dy = -1; eyesDir = 'up'; moveDirection = 'up'; }
+        else if (down && !this._moveLock.down) { dy = 1; eyesDir = 'down'; moveDirection = 'down'; }
+
+        if (moveDirection) {
+            this._moveLock[moveDirection] = true;
             // Find last empty tile in this direction
             let tx = this.tileX;
             let ty = this.tileY;
@@ -283,7 +295,8 @@ export class Player {
                 x: nextX,
                 y: nextY,
                 windowId: currentWindowId,
-                eyesDirection: eyesDir
+                eyesDirection: eyesDir,
+                moveLocks: { ...this._moveLock }
             });
             gameBridge.emit(Events.PLAY_SFX, { sfx: 'move' });
             const playerTarget = this.mainScene.getPlayerTargetAt(nextX, nextY, currentWindowId)
@@ -298,5 +311,12 @@ export class Player {
             }
         }
     }
-    private _moveLock: boolean = false;
+    private _moveLock: {
+        left: boolean,
+        right: boolean,
+        up: boolean,
+        down: boolean,
+        undo: boolean,
+        restart: boolean
+    } = { left: false, right: false, up: false, down: false, undo: false, restart: false };
 }

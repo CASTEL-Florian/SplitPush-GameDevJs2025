@@ -72,6 +72,14 @@ export type PlayerPositionData = {
     x: number;
     y: number;
     windowId: WindowID;
+    moveLocks?: {
+        left: boolean,
+        right: boolean,
+        up: boolean,
+        down: boolean,
+        undo: boolean,
+        restart: boolean
+    };
 };
 
 export type BoxPositionData = {
