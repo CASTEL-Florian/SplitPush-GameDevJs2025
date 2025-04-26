@@ -10,6 +10,7 @@ import { BoxUndoable } from './BoxUndoable';
 import { TargetManagerUndoable } from './TargetManagerUndoable';
 import { targetManager } from './TargetManager';
 import { Box } from './Box';
+import { WINDOW_WIDTH } from '../game';
 
 export type EyesDirection = 'right' | 'left' | 'up' | 'down' | 'none';
 
@@ -23,6 +24,8 @@ export class Player {
     private tileSize: number;
     private mainScene: MainScene; // MainScene type
     private isInWindow: boolean = true;
+    private bobOffset: number = 0;
+    private bobTween?: Phaser.Tweens.Tween;
 
     constructor(scene: MainScene, windowId: WindowID) {
         this.windowId = windowId;
@@ -53,7 +56,7 @@ export class Player {
         this.sprite.alpha = this.isInWindow ? 1 : 0;
         this.setupBridgeListeners(scene);
     }
-    
+
     public getSprite() {
         return this.sprite;
     }
@@ -106,13 +109,53 @@ export class Player {
                 this.setEyes('none');
             }
         };
+
+        const handleMusicBeat = () => {
+            this.onMusicBeat();
+        };
+
+        gameBridge.on(Events.MUSIC_BEAT, handleMusicBeat);
+
         gameBridge.on(Events.PLAYER_POSITION_UPDATE, handlePlayerUpdate);
         scene.events.on(Phaser.Scenes.Events.SHUTDOWN, () => {
             console.log(`[${this.windowId}] Shutting down scene, removing bridge listener.`);
             gameBridge.off(Events.PLAYER_POSITION_UPDATE, handlePlayerUpdate);
+            gameBridge.off(Events.MUSIC_BEAT, handleMusicBeat);
         });
     }
-    
+
+
+    private onMusicBeat() {
+        if (this.bobTween) {
+            this.bobTween.stop();
+        }
+
+        const bobAmount = 0.06 * this.tileSize;
+        // Instantly set to bobAmount
+        this.bobOffset = bobAmount;
+        if (this.eyesSprite) {
+            this.eyesSprite.y = this.bobOffset;
+        }
+        // Tween back to 0 with easing
+        this.bobTween = this.mainScene.tweens.add({
+            targets: this,
+            bobOffset: 0,
+            duration: 600,
+            ease: 'Quad.easeOut',
+            onUpdate: () => {
+                if (this.eyesSprite) {
+                    this.eyesSprite.y = this.bobOffset;
+                }
+            },
+            onComplete: () => {
+                this.bobOffset = 0;
+                if (this.eyesSprite) {
+                    this.eyesSprite.y = 0;
+                }
+            }
+        });
+    }
+
     public update(delta: number) {
         const Input = require('../InputManager').default.instance;
         const left = Input.isPressed('ArrowLeft') || Input.isPressed('KeyA') || Input.isPressed('KeyQ');

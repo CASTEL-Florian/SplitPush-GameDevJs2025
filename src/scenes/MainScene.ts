@@ -101,6 +101,7 @@ export default class MainScene extends Phaser.Scene {
         this.load.image('eyes_right', 'assets/eyes_right.png');
         this.load.image('eyes_up', 'assets/eyes_up.png');
         this.load.image('eyes_down', 'assets/eyes_down.png');
+        this.load.image('box_activated', 'assets/box_activated.png');
         if (this.windowId === 'left') {
             this.musicManager = new MusicManager(this, 'mainMusic', 117.91);
             this.musicManager.preload();

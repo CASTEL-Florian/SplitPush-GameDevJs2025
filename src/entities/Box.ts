@@ -111,6 +111,7 @@ export class Box extends LevelElement {
         if (isOnTarget && !this.isOnTarget) {
             // Just landed on target, start anim
             this.sprite.setScale(this.originalScaleX * 1.1, this.originalScaleY * 1.1);
+            this.sprite.setTexture('box_activated');
         }
         if (!isOnTarget && this.isOnTarget) {
             // Just left target, reset anim
@@ -119,6 +120,7 @@ export class Box extends LevelElement {
                 this.animTween = undefined;
             }
             this.sprite.setScale(this.originalScaleX, this.originalScaleY);
+            this.sprite.setTexture(this.spriteKey);
         }
         this.isOnTarget = isOnTarget;
     }
