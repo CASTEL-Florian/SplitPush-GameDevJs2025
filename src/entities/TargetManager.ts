@@ -1,9 +1,12 @@
 import { levelManager } from '../levels/LevelManager';
 import { BoxTarget } from './BoxTarget';
 
+type TargetCountListener = (current: number, total: number) => void;
+
 export class TargetManager {
     private totalTargets: number;
     private currentTargets: number;
+    private listeners: TargetCountListener[] = [];
 
     constructor(totalTargets: number, currentTargets?: number) {
         this.totalTargets = totalTargets;
@@ -20,6 +23,7 @@ export class TargetManager {
 
     setCurrentTargets(count: number): void {
         this.currentTargets = count;
+        this.emitTargetCountChanged();
     }
 
     setTotalTargets(count: number): void {
@@ -29,11 +33,13 @@ export class TargetManager {
     incrementTargets(amount: number = 1): void {
         console.log(`Incrementing targets by ${amount}. Current: ${this.currentTargets}`);
         this.currentTargets += amount;
+        this.emitTargetCountChanged();
     }
 
     decrementTargets(amount: number = 1): void {
         console.log(`Decrementing targets by ${amount}. Current: ${this.currentTargets}`);
         this.currentTargets -= amount;
+        this.emitTargetCountChanged();
     }
 
     loadLevel(index: number): void {
@@ -51,6 +57,20 @@ export class TargetManager {
         this.setTotalTargets(totalTargets);
         this.setCurrentTargets(0);
         console.log(`Loaded level ${index}. Total targets: ${totalTargets}`);
+    }
+
+    onTargetCountChanged(listener: TargetCountListener): void {
+        this.listeners.push(listener);
+    }
+
+    offTargetCountChanged(listener: TargetCountListener): void {
+        this.listeners = this.listeners.filter(l => l !== listener);
+    }
+
+    private emitTargetCountChanged(): void {
+        for (const listener of this.listeners) {
+            listener(this.currentTargets, this.totalTargets);
+        }
     }
 }
 

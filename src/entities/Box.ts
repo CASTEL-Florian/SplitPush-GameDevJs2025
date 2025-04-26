@@ -112,6 +112,7 @@ export class Box extends LevelElement {
             // Just landed on target, start anim
             this.sprite.setScale(this.originalScaleX * 1.1, this.originalScaleY * 1.1);
             this.sprite.setTexture('box_activated');
+            gameBridge.emit(Events.PLAY_SFX, { sfx: 'pop' });
         }
         if (!isOnTarget && this.isOnTarget) {
             // Just left target, reset anim

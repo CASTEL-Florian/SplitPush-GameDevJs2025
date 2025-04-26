@@ -56,6 +56,7 @@ export const Events = {
     RESTART_GAME: 'restart-game',
     GAME_WON: 'game-won',
     MUSIC_BEAT: 'music-beat',
+    PLAY_SFX: 'play-sfx',
 
     // Player events
     PLAYER_POSITION_UPDATE: 'player-position-update', // <-- Add this event
@@ -78,4 +79,8 @@ export type BoxPositionData = {
     y: number;
     boxId: number;
     windowId: WindowID;
+};
+
+export type SfxData = {
+    sfx: string;
 };

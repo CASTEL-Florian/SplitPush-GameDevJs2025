@@ -197,7 +197,7 @@ export const playerStartPositions: PlayerPositionData[] = [
     { windowId: 'left', x: 2, y: 4 }, // Level 4
     { windowId: 'right', x: 2, y: 4 }, // Level 5
     { windowId: 'left', x: 2, y: 2 }, // Level 6
-    { windowId: 'left', x: 5, y: 5 }, // Level 7
-    { windowId: 'right', x: 4, y: 3 }, // Level 8
+    { windowId: 'right', x: 4, y: 3 }, // Level 7
+    { windowId: 'left', x: 5, y: 5 }, // Level 8
     { windowId: 'right', x: 4, y: 6 }, // Level 10
 ];

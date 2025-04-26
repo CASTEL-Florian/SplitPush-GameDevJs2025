@@ -279,11 +279,10 @@ export class Player {
                 windowId: currentWindowId,
                 eyesDirection: eyesDir
             });
+            gameBridge.emit(Events.PLAY_SFX, { sfx: 'move' });
 
-            console.log("Checking if player target is filled...");
             if (this.mainScene.getPlayerTargetAt(nextX, nextY, currentWindowId)) {
                 // Check if all the box targets are filled
-                console.log("Checking if all targets are filled...");
                 const allTargetsFilled = targetManager.getCurrentTargets() === targetManager.getTotalTargets();
                 if (allTargetsFilled) {
                     // Emit event to notify the game is won

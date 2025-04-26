@@ -24,6 +24,8 @@ export class MusicManager {
         this.scene.load.audio(this.musicKey, `assets/Brain-Teaser-3.mp3`);
         this.scene.load.audio('transition', 'assets/tactactac.mp3');
         this.scene.load.audio('transition2', 'assets/tactactacReversed.mp3');
+        this.scene.load.audio('move_sfx', 'assets/click.wav');
+        this.scene.load.audio('pop_sfx', 'assets/pop.mp3');
     }
 
     create(onBeatCallback?: BeatCallback) {
@@ -66,5 +68,15 @@ export class MusicManager {
         if (this.transitionSound2) {
             this.transitionSound2.play();
         }
+    }
+
+    public playMoveSFX() {
+        const moveSFX = this.scene.sound.add('move_sfx', { loop: false, volume: 1 });
+        moveSFX.play();
+    }
+
+    public playPopSFX() {
+        const popSFX = this.scene.sound.add('pop_sfx', { loop: false, volume: 0.6 });
+        popSFX.play();
     }
 }

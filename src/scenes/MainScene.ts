@@ -40,7 +40,6 @@ export default class MainScene extends Phaser.Scene {
         const level = levelArr[this.lastLevelIndex];
         if (!level) return [];
         // Only return elements that are PlayerTarget
-        console.log(level.elements);
         return level.elements.filter(e => e instanceof PlayerTarget) as import("../entities/PlayerTarget.ts").PlayerTarget[];
     }
 
@@ -268,9 +267,23 @@ export default class MainScene extends Phaser.Scene {
         };
         gameBridge.on(Events.GAME_WON, handleWin);
 
+        const handlePlaySfx = (data: any) => {
+            if (this.windowId === 'left') {
+                if (data.sfx === 'move') {
+                    this.musicManager?.playMoveSFX();
+                }
+                if (data.sfx === 'pop') {
+                    this.musicManager?.playPopSFX();
+                }
+            }
+        }
+        gameBridge.on(Events.PLAY_SFX, handlePlaySfx);
+
         scene.events.on(Phaser.Scenes.Events.SHUTDOWN, () => {
             console.log(`[${this.windowId}] Shutting down scene, removing bridge listener.`);
             gameBridge.off(Events.BOX_RESPAWN, handleBoxUpdate);
+            gameBridge.off(Events.GAME_WON, handleWin);
+            gameBridge.off(Events.PLAY_SFX, handlePlaySfx);
         });
     }
 
