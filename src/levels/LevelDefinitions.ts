@@ -21,14 +21,14 @@ export const leftLevel1: LevelDef = {
     elements: [
         new PlayerTarget(4, 2),
     ],
-    tilemapPath: 'assets/level1.json'
+    tilemapPath: 'assets/level1_left.json'
 };
 
 export const rightLevel1: LevelDef = {
     elements: [
         new TextElement('Move with WASD\nor arrow keys', 185, 200, 30, '#995007', true),
     ],
-    tilemapPath: 'assets/level1.json'
+    tilemapPath: 'assets/level1_right.json'
 };
 
 // Level 2
@@ -36,7 +36,7 @@ export const leftLevel2: LevelDef = {
     elements: [
         new TextElement('Press U to undo\nyour last move\n\nR to reset', 185, 200, 30, '#20476B', true),
     ],
-    tilemapPath: 'assets/level1.json'
+    tilemapPath: 'assets/level1_left.json'
 };
 
 export const rightLevel2: LevelDef = {
@@ -45,7 +45,7 @@ export const rightLevel2: LevelDef = {
         new PlayerTarget(2, 2),
         new BoxTarget(4, 2, 'default'),
     ],
-    tilemapPath: 'assets/level1.json'
+    tilemapPath: 'assets/level1_right.json'
 };
 
 // Level 3
@@ -184,20 +184,20 @@ export const rightLevel10: LevelDef = {
     tilemapPath: 'assets/level10_right.json'
 };
 
-// export const leftLevels: LevelDef[] = [leftLevel1, leftLevel2, leftLevel3, leftLevel4, leftLevel5, leftLevel10];
-// export const rightLevels: LevelDef[] = [rightLevel1, rightLevel2, rightLevel3, rightLevel4, rightLevel5, rightLevel10];
+export const leftLevels: LevelDef[] = [leftLevel1, leftLevel2, leftLevel3, leftLevel4, leftLevel5, leftLevel6, leftLevel7, leftLevel8, leftLevel10];
+export const rightLevels: LevelDef[] = [rightLevel1, rightLevel2, rightLevel3, rightLevel4, rightLevel5, rightLevel6, rightLevel7, rightLevel8, rightLevel10];
 
-export const leftLevels: LevelDef[] = [leftLevel8, leftLevel10];
-export const rightLevels: LevelDef[] = [rightLevel8, rightLevel10];
+// export const leftLevels: LevelDef[] = [leftLevel8, leftLevel10];
+// export const rightLevels: LevelDef[] = [rightLevel8, rightLevel10];
 
 export const playerStartPositions: PlayerPositionData[] = [
-    //{ windowId: 'left', x: 2, y: 6 }, // Level 1
-    //{ windowId: 'right', x: 4, y: 6 }, // Level 2
-    //{ windowId: 'left', x: 2, y: 3 }, // Level 3
-    //{ windowId: 'left', x: 2, y: 4 }, // Level 4
-    //{ windowId: 'right', x: 2, y: 4 }, // Level 5
-    //{ windowId: 'left', x: 2, y: 2 }, // Level 6
-    //{ windowId: 'left', x: 5, y: 5 }, // Level 7
+    { windowId: 'left', x: 2, y: 6 }, // Level 1
+    { windowId: 'right', x: 4, y: 6 }, // Level 2
+    { windowId: 'left', x: 2, y: 3 }, // Level 3
+    { windowId: 'left', x: 2, y: 4 }, // Level 4
+    { windowId: 'right', x: 2, y: 4 }, // Level 5
+    { windowId: 'left', x: 2, y: 2 }, // Level 6
+    { windowId: 'left', x: 5, y: 5 }, // Level 7
     { windowId: 'right', x: 4, y: 3 }, // Level 8
     { windowId: 'right', x: 4, y: 6 }, // Level 10
 ];

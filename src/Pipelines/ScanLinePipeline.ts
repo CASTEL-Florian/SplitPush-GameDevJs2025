@@ -1,11 +1,11 @@
 import Phaser from 'phaser';
 
 export class ScanlinePipeline extends Phaser.Renderer.WebGL.Pipelines.MultiPipeline {
-    public intensity: number = 0.2;
+    public intensity: number = 0.04;
 
-    public lineFrequency: number = 180.0;
+    public lineFrequency: number = 150.0;
 
-    public scrollSpeed: number = -0.0006;
+    public scrollSpeed: number = -0.0003;
 
     /**
      * Controls the frequency of the vertical sine wave modulating the scanline intensity.

@@ -49,7 +49,7 @@ export class MusicManager {
         if (currentTime - this.lastBeat >= this.beatInterval) {
             this.lastBeat += this.beatInterval;
             this.isLastBeatOdd = !this.isLastBeatOdd;
-            if (this.onBeatCallback && this.isLastBeatOdd) this.onBeatCallback();
+            if (this.onBeatCallback) this.onBeatCallback();
         }
         if (currentTime < this.lastBeat) {
             this.lastBeat = 0;

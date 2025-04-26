@@ -93,10 +93,14 @@ export default class MainScene extends Phaser.Scene {
         this.load.image('darkOrb', 'assets/darkOrb.png');
         this.load.image('lightTeleporter', 'assets/lightTeleporter.png');
         this.load.image('darkTeleporter', 'assets/darkTeleporter.png');
-        this.load.image('tiles', 'assets/tiles2.png');
+        this.load.image('tiles', 'assets/tiles3.png');
         this.load.image('box', 'assets/box.png');
         this.load.image('box_target', 'assets/box_target.png');
         this.load.image('player_target', 'assets/player_target.png');
+        this.load.image('eyes', 'assets/eyes.png');
+        this.load.image('eyes_right', 'assets/eyes_right.png');
+        this.load.image('eyes_up', 'assets/eyes_up.png');
+        this.load.image('eyes_down', 'assets/eyes_down.png');
         if (this.windowId === 'left') {
             this.musicManager = new MusicManager(this, 'mainMusic', 117.91);
             this.musicManager.preload();
