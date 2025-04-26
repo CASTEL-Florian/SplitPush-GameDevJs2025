@@ -84,7 +84,7 @@ export const leftLevel4: LevelDef = {
 export const rightLevel4: LevelDef = {
     elements: [
         new BoxTarget(3, 4, 'default'),
-        new PlayerTarget(4, 4),
+        new PlayerTarget(4, 3),
     ],
     tilemapPath: 'assets/level4_right.json'
 };
@@ -92,17 +92,17 @@ export const rightLevel4: LevelDef = {
 // Level 5
 export const leftLevel5: LevelDef = {
     elements: [
-        new BoxTarget(3, 4, 'default'),
-        new Box(6, 6, 0.5, 'left'),
+        new BoxTarget(5, 6, 'default'),
+        new Box(2, 4, 0.5, 'left'),
     ],
     tilemapPath: 'assets/level5_left.json'
 };
 
 export const rightLevel5: LevelDef = {
     elements: [
-        new BoxTarget(4, 4, 'default'),
-        new Box(0, 4, 0.5, 'right'),
-        new PlayerTarget(0, 3),
+        new BoxTarget(1, 2, 'default'),
+        new Box(4, 4, 0.5, 'right'),
+        new PlayerTarget(4, 6),
     ],
     tilemapPath: 'assets/level5_right.json'
 };
@@ -110,17 +110,15 @@ export const rightLevel5: LevelDef = {
 // Level 6
 export const leftLevel6: LevelDef = {
     elements: [
-        new BoxTarget(5, 6, 'default'),
-        new Box(2, 4, 0.5, 'left'),
+        new PlayerTarget(2, 3),
     ],
     tilemapPath: 'assets/level6_left.json'
 };
 
 export const rightLevel6: LevelDef = {
     elements: [
-        new BoxTarget(1, 2, 'default'),
-        new Box(4, 4, 0.5, 'right'),
-        new PlayerTarget(4, 6),
+        new BoxTarget(0, 7, 'default'),
+        new Box(0, 3, 0.5, 'right'),
     ],
     tilemapPath: 'assets/level6_right.json'
 };
@@ -128,15 +126,17 @@ export const rightLevel6: LevelDef = {
 // Level 7
 export const leftLevel7: LevelDef = {
     elements: [
-        new PlayerTarget(2, 3),
+        new BoxTarget(3, 4, 'default'),
+        new Box(6, 6, 0.5, 'left'),
     ],
     tilemapPath: 'assets/level7_left.json'
 };
 
 export const rightLevel7: LevelDef = {
     elements: [
-        new BoxTarget(0, 7, 'default'),
-        new Box(0, 3, 0.5, 'right'),
+        new BoxTarget(4, 4, 'default'),
+        new Box(0, 4, 0.5, 'right'),
+        new PlayerTarget(0, 3),
     ],
     tilemapPath: 'assets/level7_right.json'
 };
@@ -194,10 +194,10 @@ export const playerStartPositions: PlayerPositionData[] = [
     { windowId: 'left', x: 2, y: 6 }, // Level 1
     { windowId: 'right', x: 4, y: 6 }, // Level 2
     { windowId: 'left', x: 2, y: 3 }, // Level 3
-    { windowId: 'left', x: 2, y: 4 }, // Level 4
-    { windowId: 'right', x: 2, y: 4 }, // Level 5
-    { windowId: 'left', x: 2, y: 2 }, // Level 6
-    { windowId: 'right', x: 4, y: 3 }, // Level 7
+    { windowId: 'left', x: 2, y: 3 }, // Level 4
+    { windowId: 'left', x: 2, y: 2 }, // Level 5
+    { windowId: 'right', x: 4, y: 3 }, // Level 6
+    { windowId: 'right', x: 2, y: 4 }, // Level 7
     { windowId: 'left', x: 5, y: 5 }, // Level 8
     { windowId: 'right', x: 4, y: 6 }, // Level 10
 ];

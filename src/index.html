@@ -6,23 +6,54 @@
     <title>Dual Window Game</title>
     <style>
         body {
-            display: flex; /* Use flexbox for layout */
-            justify-content: center; /* Center the containers horizontally */
-            align-items: flex-start; /* Align items at the top */
+            display: flex;
+            flex-direction: column; /* Stack main container and text vertically */
+            align-items: center;
             margin-top: 20px;
-            background-color: #222; /* Dark background */
+            background-color: #222;
+        }
+        .games-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            height: 1320px;
         }
         .game-container {
-            border: 2px solid #555; /* Optional border */
+            border: 2px solid #555;
         }
         #game-container-left {
-            margin-right: 20px; /* Gap between windows */
+            margin-right: 20px;
+        }
+        .title {
+            color: #fff;
+            font-size: 2rem;
+            margin-top: 32px;
+            margin-bottom: 8px;
+            text-align: left;
+        }
+        .subtitle {
+            color: #bbb;
+            font-size: 1.1rem;
+            margin-bottom: 0;
+            text-align: left;
+        }
+        .text-wrapper {
+            content: center;
+            width: 100%;
+            max-width: calc(944px);
+            box-sizing: border-box;
         }
     </style>
 </head>
 <body>
-    <div id="game-container-left" class="game-container"></div>
-    <div id="game-container-right" class="game-container"></div>
+    <div class="games-wrapper">
+        <div id="game-container-left" class="game-container"></div>
+        <div id="game-container-right" class="game-container"></div>
+    </div>
+    <div class="text-wrapper">
+        <div class="title">Split push</div>
+        <div class="subtitle">Made for Gamedev.js Jam 2025 on the theme "Balance".</div>
+    </div>
     <script type="module" src="/bundle.js"></script>
 </body>
 </html>
