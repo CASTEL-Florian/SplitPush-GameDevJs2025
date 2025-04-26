@@ -378,6 +378,7 @@ export default class MainScene extends Phaser.Scene {
      * Loads the next level and respawns entities.
      */
     private loadNextLevel(backToLevel1: boolean): void {
+        undoManager.undoAll();
         levelManager.despawn(this.lastLevelIndex, this, this.windowId);
         if (backToLevel1) {
             this.lastLevelIndex = 0;
@@ -392,6 +393,5 @@ export default class MainScene extends Phaser.Scene {
         levelManager.spawn(this.lastLevelIndex, this, this.windowId);
         weightManager.leftWeight = 0;
         weightManager.rightWeight = 0;
-        undoManager.clear();
     }
 }
