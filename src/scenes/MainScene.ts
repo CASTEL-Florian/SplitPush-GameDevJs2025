@@ -275,6 +275,9 @@ export default class MainScene extends Phaser.Scene {
                 if (data.sfx === 'pop') {
                     this.musicManager?.playPopSFX();
                 }
+                if (data.sfx === 'undo') {
+                    this.musicManager?.playPopSFX2();
+                }
             }
         }
         gameBridge.on(Events.PLAY_SFX, handlePlaySfx);

@@ -26,6 +26,7 @@ export class MusicManager {
         this.scene.load.audio('transition2', 'assets/tactactacReversed.mp3');
         this.scene.load.audio('move_sfx', 'assets/click.wav');
         this.scene.load.audio('pop_sfx', 'assets/pop.mp3');
+        this.scene.load.audio('pop_sfx2', 'assets/pop2.mp3');
     }
 
     create(onBeatCallback?: BeatCallback) {
@@ -78,5 +79,10 @@ export class MusicManager {
     public playPopSFX() {
         const popSFX = this.scene.sound.add('pop_sfx', { loop: false, volume: 0.6 });
         popSFX.play();
+    }
+
+    public playPopSFX2() {
+        const popSFX2 = this.scene.sound.add('pop_sfx2', { loop: false, volume: 0.6 });
+        popSFX2.play();
     }
 }

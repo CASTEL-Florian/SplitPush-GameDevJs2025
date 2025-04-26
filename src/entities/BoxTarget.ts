@@ -29,6 +29,7 @@ export class BoxTarget extends LevelElement {
         const y = this.tileY * this.tileSize + this.tileSize / 2;
         this.sprite = scene.add.sprite(x, y, this.spriteKey).setDisplaySize(this.tileSize, this.tileSize);
         this.sprite.setOrigin(0.5, 0.5);
+        this.sprite.setDepth(-1000);
         this.spawned = true;
         this.scene = scene;
     }

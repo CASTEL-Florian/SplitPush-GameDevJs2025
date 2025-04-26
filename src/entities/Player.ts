@@ -174,12 +174,18 @@ export class Player {
         if (this._moveLock) return;
         if (undo) {
             this._moveLock = true;
-            undoManager.undo();
+            if (undoManager.canUndo()) {
+                undoManager.undo();
+                gameBridge.emit(Events.PLAY_SFX, { sfx: 'undo' });
+            }
             return;
         }
         if (restart) {
             this._moveLock = true;
-            undoManager.undoAll();
+            if (undoManager.canUndo()) {
+                undoManager.undoAll();
+                gameBridge.emit(Events.PLAY_SFX, { sfx: 'undo' });
+            }
             return;
         }
         let dx = 0, dy = 0;

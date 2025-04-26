@@ -59,6 +59,13 @@ export class UndoManager {
             this.undo();
         }
     }
+
+    /**
+     * Returns true if there is anything that can be undone.
+     */
+    public canUndo(): boolean {
+        return this.currentStep.length > 0 || this.steps.length > 0;
+    }
 }
 
 export const undoManager = new UndoManager();
