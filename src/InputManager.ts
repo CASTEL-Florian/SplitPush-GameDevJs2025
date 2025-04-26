@@ -25,6 +25,16 @@ class InputManager {
   }
 
   private handleKeyDown = (e: KeyboardEvent) => {
+    // Prevent default for arrow keys and space
+    if (
+      e.code === "ArrowUp" ||
+      e.code === "ArrowDown" ||
+      e.code === "ArrowLeft" ||
+      e.code === "ArrowRight" ||
+      e.code === "Space"
+    ) {
+      e.preventDefault();
+    }
     const state = this.keyStates.get(e.code) || { pressed: false, justPressed: false, justReleased: false };
     if (!state.pressed) {
       state.justPressed = true;
@@ -35,6 +45,16 @@ class InputManager {
   };
 
   private handleKeyUp = (e: KeyboardEvent) => {
+    // Prevent default for arrow keys and space
+    if (
+      e.code === "ArrowUp" ||
+      e.code === "ArrowDown" ||
+      e.code === "ArrowLeft" ||
+      e.code === "ArrowRight" ||
+      e.code === "Space"
+    ) {
+      e.preventDefault();
+    }
     const state = this.keyStates.get(e.code) || { pressed: false, justPressed: false, justReleased: false };
     state.justReleased = true;
     state.pressed = false;
