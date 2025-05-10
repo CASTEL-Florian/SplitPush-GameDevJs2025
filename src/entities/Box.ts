@@ -51,7 +51,7 @@ export class Box extends LevelElement {
         if (this.sprite) return; // Already spawned
         const x = this.tileX * this.tileSize + this.tileSize / 2;
         const y = this.tileY * this.tileSize + this.tileSize / 2;
-        this.sprite = scene.add.sprite(x, y, this.spriteKey).setDisplaySize(this.tileSize, this.tileSize);
+        this.sprite = scene.add.sprite(x, y, this.isOnTarget ? 'box_activated' : this.spriteKey).setDisplaySize(this.tileSize, this.tileSize);
         this.sprite.setOrigin(0.5, 0.5);
         this.sprite.setData('box', this);
         // Store the scale that setDisplaySize produced as the "original" scale
@@ -270,7 +270,7 @@ export class Box extends LevelElement {
                     break;
                 }
             }
-            // Add this box to the new LevelDef's elements array (first level for now)
+            // Add this box to the new LevelDef's elements array
             
             if (newArray.length > 0) {
                 console.log(`Adding box to new level: ${newArray[(this.scene as MainScene).lastLevelIndex].elements.length}`);
