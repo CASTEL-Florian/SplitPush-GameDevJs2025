@@ -80,7 +80,7 @@ export type PlayerPositionData = {
         undo: boolean,
         restart: boolean
     };
-    lastMoveLockDir?: 'left' | 'right' | 'up' | 'down'; // <-- Add this line
+    lastMoveLockDir?: 'left' | 'right' | 'up' | 'down';
 };
 
 export type BoxPositionData = {

@@ -102,6 +102,7 @@ export class Player {
             }
             this.tileX = data.x;
             this.tileY = data.y;
+            this._moveLock.undo = true;
             this.sprite.setPosition(
                 this.tileX * this.tileSize + this.tileSize / 2,
                 this.tileY * this.tileSize + this.tileSize / 2
